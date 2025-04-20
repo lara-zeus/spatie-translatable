@@ -225,5 +225,5 @@ class BlogPostsRelationManager extends RelationManager
 If you wish to translate the package, you may publish the language files using:
 
 ```bash
-php artisan vendor:publish --tag=filament-spatie-laravel-translatable-plugin-translations
+php artisan vendor:publish --tag=lara-zeus-spatie-translatable-translations
 ```

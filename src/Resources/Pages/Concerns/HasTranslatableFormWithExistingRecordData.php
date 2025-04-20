@@ -23,7 +23,7 @@ trait HasTranslatableFormWithExistingRecordData
                 $translatedData[$attribute] = $record->getTranslation(
                     $attribute,
                     $locale,
-                    useFallbackLocale: filament('spatie-laravel-translatable')->getUseFallbackLocale()
+                    useFallbackLocale: filament('spatie-translatable')->getUseFallbackLocale()
                 );
             }
 

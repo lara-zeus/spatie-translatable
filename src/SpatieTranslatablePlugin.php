@@ -26,7 +26,7 @@ class SpatieTranslatablePlugin implements Plugin
 
     public function getId(): string
     {
-        return 'spatie-laravel-translatable';
+        return 'spatie-translatable';
     }
 
     public function register(Panel $panel): void

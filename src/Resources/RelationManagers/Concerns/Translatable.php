@@ -12,7 +12,7 @@ trait Translatable
     {
         if (
             blank($this->activeLocale) ||
-            (! in_array($this->activeLocale, $this->getTranslatableLocales()))
+            (!in_array($this->activeLocale, $this->getTranslatableLocales(), true))
         ) {
             $this->setActiveLocale();
         }
@@ -20,7 +20,7 @@ trait Translatable
 
     public function getTranslatableLocales(): array
     {
-        return filament('spatie-laravel-translatable')->getDefaultLocales();
+        return filament('spatie-translatable')->getDefaultLocales();
     }
 
     public function getDefaultTranslatableLocale(): string
