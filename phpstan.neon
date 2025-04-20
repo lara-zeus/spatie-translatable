@@ -1,0 +1,13 @@
+parameters:
+    level: 9
+    paths:
+        - src
+
+    checkOctaneCompatibility: true
+    checkModelProperties: true
+
+    ignoreErrors:
+        -
+            identifier: missingType.iterableValue
+        -
+            identifier: missingType.generics
