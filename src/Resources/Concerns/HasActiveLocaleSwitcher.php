@@ -3,7 +3,7 @@
 namespace LaraZeus\SpatieTranslatable\Resources\Concerns;
 
 use Filament\Support\Contracts\TranslatableContentDriver;
-use LaraZeus\SpatieTranslatable\SpatieLaravelTranslatableContentDriver;
+use LaraZeus\SpatieTranslatable\SpatieTranslatableContentDriver;
 
 trait HasActiveLocaleSwitcher
 {
@@ -28,6 +28,6 @@ trait HasActiveLocaleSwitcher
      */
     public function getFilamentTranslatableContentDriver(): ?string
     {
-        return SpatieLaravelTranslatableContentDriver::class;
+        return SpatieTranslatableContentDriver::class;
     }
 }

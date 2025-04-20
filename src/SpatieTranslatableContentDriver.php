@@ -11,7 +11,7 @@ use Illuminate\Support\Arr;
 use function Filament\Support\generate_search_column_expression;
 use function Filament\Support\generate_search_term_expression;
 
-class SpatieLaravelTranslatableContentDriver implements TranslatableContentDriver
+class SpatieTranslatableContentDriver implements TranslatableContentDriver
 {
     public function __construct(protected string $activeLocale)
     {
@@ -111,7 +111,7 @@ class SpatieLaravelTranslatableContentDriver implements TranslatableContentDrive
             $attributes[$attribute] = $record->getTranslation(
                 $attribute,
                 $this->activeLocale,
-                useFallbackLocale: (new SpatieLaravelTranslatablePlugin)->getUseFallbackLocale()
+                useFallbackLocale: (new SpatieTranslatablePlugin)->getUseFallbackLocale()
             );
         }
 

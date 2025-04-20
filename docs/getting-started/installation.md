@@ -16,13 +16,13 @@ composer require lara-zeus/spatie-translatable
 To add a plugin to a panel, you must include it in the configuration file using the `plugin()` method:
 
 ```php
-use LaraZeus\SpatieTranslatable\SpatieLaravelTranslatablePlugin;
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 
 public function panel(Panel $panel): Panel
 {
     return $panel
         // ...
-        ->plugin(SpatieLaravelTranslatablePlugin::make());
+        ->plugin(SpatieTranslatablePlugin::make());
 }
 ```
 
@@ -31,14 +31,14 @@ public function panel(Panel $panel): Panel
 To set up the locales that can be used to translate content, you can pass an array of locales to the `defaultLocales()` plugin method:
 
 ```php
-use LaraZeus\SpatieTranslatable\SpatieLaravelTranslatablePlugin;
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 
 public function panel(Panel $panel): Panel
 {
     return $panel
         // ...
         ->plugin(
-            SpatieLaravelTranslatablePlugin::make()
+            SpatieTranslatablePlugin::make()
                 ->defaultLocales(['en', 'es']),
         );
 }

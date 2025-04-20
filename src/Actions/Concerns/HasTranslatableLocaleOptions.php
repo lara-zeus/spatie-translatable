@@ -2,7 +2,7 @@
 
 namespace LaraZeus\SpatieTranslatable\Actions\Concerns;
 
-use LaraZeus\SpatieTranslatable\SpatieLaravelTranslatablePlugin;
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 
 trait HasTranslatableLocaleOptions
 {
@@ -17,7 +17,7 @@ trait HasTranslatableLocaleOptions
 
             $locales = [];
 
-            /** @var SpatieLaravelTranslatablePlugin $plugin */
+            /** @var SpatieTranslatablePlugin $plugin */
             $plugin = filament('spatie-translatable');
 
             foreach ($livewire->getTranslatableLocales() as $locale) {

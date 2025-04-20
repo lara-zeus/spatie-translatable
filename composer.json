@@ -28,7 +28,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "LaraZeus\\SpatieTranslatable\\SpatieLaravelTranslatablePluginServiceProvider"
+                "LaraZeus\\SpatieTranslatable\\SpatieTranslatableServiceProvider"
             ]
         }
     },

@@ -6,7 +6,7 @@ use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 
-class SpatieLaravelTranslatablePlugin implements Plugin
+class SpatieTranslatablePlugin implements Plugin
 {
     protected ?array $defaultLocales = [];
 
