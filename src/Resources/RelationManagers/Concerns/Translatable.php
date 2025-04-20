@@ -12,7 +12,7 @@ trait Translatable
     {
         if (
             blank($this->activeLocale) ||
-            (!in_array($this->activeLocale, $this->getTranslatableLocales(), true))
+            (! in_array($this->activeLocale, $this->getTranslatableLocales(), true))
         ) {
             $this->setActiveLocale();
         }

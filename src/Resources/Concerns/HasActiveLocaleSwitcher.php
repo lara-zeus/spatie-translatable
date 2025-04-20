@@ -11,7 +11,7 @@ trait HasActiveLocaleSwitcher
 
     public function getActiveFormsLocale(): ?string
     {
-        if (!in_array($this->activeLocale, $this->getTranslatableLocales(), true)) {
+        if (! in_array($this->activeLocale, $this->getTranslatableLocales(), true)) {
             return null;
         }
 
