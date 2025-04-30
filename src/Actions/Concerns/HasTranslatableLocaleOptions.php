@@ -9,6 +9,8 @@ trait HasTranslatableLocaleOptions
     public function setTranslatableLocaleOptions(): static
     {
         $this->options(function (): array {
+
+            /** @var object $livewire */
             $livewire = $this->getLivewire();
 
             if (! method_exists($livewire, 'getTranslatableLocales')) {

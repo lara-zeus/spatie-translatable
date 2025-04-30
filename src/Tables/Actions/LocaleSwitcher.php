@@ -2,9 +2,12 @@
 
 namespace LaraZeus\SpatieTranslatable\Tables\Actions;
 
-use Filament\Tables\Actions\SelectAction;
+use Filament\Actions\SelectAction;
 use LaraZeus\SpatieTranslatable\Actions\Concerns\HasTranslatableLocaleOptions;
 
+/**
+ * @deprecated use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher
+ */
 class LocaleSwitcher extends SelectAction
 {
     use HasTranslatableLocaleOptions;
