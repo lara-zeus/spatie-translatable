@@ -3,11 +3,14 @@
 namespace LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns;
 
 use Filament\Facades\Filament;
+use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\HasActiveLocaleSwitcher;
 use Livewire\Attributes\Locked;
+use RuntimeException;
+use Throwable;
 
 trait Translatable
 {
@@ -16,7 +19,18 @@ trait Translatable
     protected ?string $oldActiveLocale = null;
 
     #[Locked]
-    public $otherLocaleData = [];
+    public array $otherLocaleData = [];
+
+    /**
+     * @throws Throwable
+     */
+    public function bootTranslatable(): void
+    {
+        throw_unless(
+            is_subclass_of(static::class, CreateRecord::class),
+            new RuntimeException('dont use the trait "' . Translatable::class . '" with "' . static::class . '"')
+        );
+    }
 
     public function mountTranslatable(): void
     {

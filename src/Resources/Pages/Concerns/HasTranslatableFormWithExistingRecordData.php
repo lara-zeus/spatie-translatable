@@ -7,7 +7,7 @@ use Livewire\Attributes\Locked;
 trait HasTranslatableFormWithExistingRecordData
 {
     #[Locked]
-    public $otherLocaleData = [];
+    public array $otherLocaleData = [];
 
     protected function fillForm(): void
     {
@@ -45,7 +45,7 @@ trait HasTranslatableFormWithExistingRecordData
         $availableLocales = array_keys($this->getRecord()->getTranslations($resource::getTranslatableAttributes()[0]));
         $defaultLocale = $resource::getDefaultTranslatableLocale();
 
-        if (in_array($defaultLocale, $availableLocales)) {
+        if (in_array($defaultLocale, $availableLocales, true)) {
             return $defaultLocale;
         }
 

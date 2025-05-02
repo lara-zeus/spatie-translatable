@@ -172,7 +172,7 @@ public function table(Table $table): Table
         ])
         ->headerActions([
             // ...
-            \LaraZeus\SpatieTranslatable\Tables\Actions\LocaleSwitcher::make(),
+            \LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher::make(),
         ]);
 }
 ```
