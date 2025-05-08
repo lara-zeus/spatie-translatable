@@ -4,6 +4,15 @@
 
 <h4 align="center">Lara Zeus Translatable is Filament support for Spatie's Laravel Translatable package.</h4>
 
+<p align="center">
+
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/lara-zeus/spatie-translatable.svg?style=flat-square)](https://packagist.org/packages/lara-zeus/spatie-translatable)
+[![Code Style](https://img.shields.io/github/actions/workflow/status/lara-zeus/spatie-translatable/fix-php-code-style-issues.yml?label=code-style&flat-square)](https://github.com/lara-zeus/spatie-translatable/actions?query=workflow%3Afix-php-code-style-issues+branch%3A1.x)
+[![Total Downloads](https://img.shields.io/packagist/dt/lara-zeus/spatie-translatable.svg?style=flat-square)](https://packagist.org/packages/lara-zeus/spatie-translatable)
+[![Total Downloads](https://img.shields.io/github/stars/lara-zeus/spatie-translatable?style=flat-square)](https://github.com/lara-zeus/spatie-translatable)
+
+</p>
+
 ## Support Filament
 
 <a href="https://github.com/sponsors/danharrin">
