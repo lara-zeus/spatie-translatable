@@ -10,7 +10,7 @@
     "require": {
         "php": "^8.1",
         "ext-intl": "*",
-        "filament/filament": "^v4.0.0-alpha4",
+        "filament/filament": "^4.0",
         "spatie/laravel-translatable": "^6.0"
     },
     "require-dev": {
@@ -38,6 +38,6 @@
             "phpstan/extension-installer": true
         }
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "beta",
     "prefer-stable": true
 }
