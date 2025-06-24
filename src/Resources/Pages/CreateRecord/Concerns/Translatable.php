@@ -2,7 +2,6 @@
 
 namespace LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns;
 
-use Filament\Facades\Filament;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -44,7 +43,7 @@ trait Translatable
 
     protected function handleRecordCreation(array $data): Model
     {
-        $record = app(static::getModel());
+        $record = new ($this->getModel())($data);
 
         $translatableAttributes = static::getResource()::getTranslatableAttributes();
 
@@ -71,11 +70,8 @@ trait Translatable
             }
         }
 
-        if (
-            static::getResource()::isScopedToTenant() &&
-            ($tenant = Filament::getTenant())
-        ) {
-            return $this->associateRecordWithTenant($record, $tenant);
+        if ($parentRecord = $this->getParentRecord()) {
+            return $this->associateRecordWithParent($record, $parentRecord);
         }
 
         $record->save();
