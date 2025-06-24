@@ -13,6 +13,9 @@
 
 </p>
 
+> [!IMPORTANT]  
+> This plugin is for filament v4 only, if you're looking for filament v3 support, please check the new repo: [translatable](https://github.com/lara-zeus/translatable).
+
 ## Support Filament
 
 <a href="https://github.com/sponsors/danharrin">
