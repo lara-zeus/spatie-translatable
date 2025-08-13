@@ -38,6 +38,5 @@
             "phpstan/extension-installer": true
         }
     },
-    "minimum-stability": "beta",
     "prefer-stable": true
 }
