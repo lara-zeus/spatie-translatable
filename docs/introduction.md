@@ -19,7 +19,7 @@ weight: 1
 
 **✨ to learn more about Translatable, please visit:**
 
-- [Docs](https://larazeus.com/docs/translatable)
+- [Docs](https://larazeus.com/docs/spatie-translatable)
 
 ## Important Note on Using the Local Switcher
 

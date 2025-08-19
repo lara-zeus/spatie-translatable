@@ -14,7 +14,7 @@
 </p>
 
 > [!IMPORTANT]  
-> This plugin is for filament v4 only, if you're looking for filament v3 support, please check the new repo: [translatable](https://github.com/lara-zeus/translatable).
+> This plugin is for filament v4 only, if you're looking for filament v3 support, please check the new repo: [translatable](https://github.com/lara-zeus/spatie-translatable).
 
 ## Support Filament
 
@@ -41,7 +41,7 @@ We are committed to providing ongoing improvements and welcome contributions and
 
 ## Full Documentation
 
-> Visit our website to get the complete documentation: https://larazeus.com/docs/translatable
+> Visit our website to get the complete documentation: https://larazeus.com/docs/spatie-translatable
 
 ### Important Note on Using the Local Switcher
 
@@ -66,7 +66,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on recent changes.
 
 ## Support
 available support channels:
-* open an issue on [GitHub](https://github.com/lara-zeus/translatable/issues)
+* open an issue on [GitHub](https://github.com/lara-zeus/spatie-translatable/issues)
 * Email us using the [contact center](https://larazeus.com/contact-us)
 
 ## Contributing
