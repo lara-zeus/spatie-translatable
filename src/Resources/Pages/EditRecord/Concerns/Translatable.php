@@ -48,17 +48,11 @@ trait Translatable
         }
 
         foreach ($this->otherLocaleData as $locale => $localeData) {
-            $existingLocales ??= collect($translatableAttributes)
-                ->map(fn (string $attribute): array => array_keys($record->getTranslations($attribute)))
-                ->flatten()
-                ->unique()
-                ->all();
-
             try {
-                $this->form->fill($this->form->getState(false));
+                $this->form->fill($this->form->getState());
                 $this->form->validate();
             } catch (ValidationException $exception) {
-                if (! array_key_exists($locale, $existingLocales)) {
+                if (! array_key_exists($locale, $record->locales())) {
                     continue;
                 }
 
@@ -92,16 +86,15 @@ trait Translatable
 
         $this->resetValidation();
         $translatableAttributes = static::getResource()::getTranslatableAttributes();
-
         try {
             $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
-                $this->form->getRawState(),
+                $this->form->getState(),
                 $translatableAttributes
             );
 
             $this->form->fill([
                 ...Arr::except(
-                    $this->form->getRawState(),
+                    $this->form->getState(),
                     $translatableAttributes
                 ),
                 ...$this->otherLocaleData[$this->activeLocale] ?? [],
