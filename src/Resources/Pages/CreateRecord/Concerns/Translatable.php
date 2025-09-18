@@ -57,7 +57,7 @@ trait Translatable
 
         foreach ($this->otherLocaleData as $locale => $localeData) {
             try {
-                $this->form->fill($this->form->getRawState());
+                $this->form->fill($this->form->getState());
                 $this->form->validate();
             } catch (ValidationException $exception) {
                 continue;
@@ -96,13 +96,13 @@ trait Translatable
 
         try {
             $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
-                $this->form->getRawState(),
+                $this->form->getState(),
                 $translatableAttributes
             );
 
             $this->form->fill([
                 ...Arr::except(
-                    $this->form->getRawState(),
+                    $this->form->getState(),
                     $translatableAttributes
                 ),
                 ...$this->otherLocaleData[$this->activeLocale] ?? [],
