@@ -3,9 +3,9 @@
 namespace LaraZeus\SpatieTranslatable\Resources\Concerns;
 
 use Filament\Support\Contracts\TranslatableContentDriver;
+use Illuminate\Support\Arr;
 use Illuminate\Validation\ValidationException;
 use LaraZeus\SpatieTranslatable\SpatieTranslatableContentDriver;
-use Illuminate\Support\Arr;
 
 trait HasActiveLocaleSwitcher
 {
