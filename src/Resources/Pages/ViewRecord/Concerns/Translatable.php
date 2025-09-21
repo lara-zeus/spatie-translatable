@@ -27,6 +27,8 @@ trait Translatable
             is_subclass_of(static::class, ViewRecord::class),
             new RuntimeException('dont use the trait "' . Translatable::class . '" with "' . static::class . '"')
         );
+
+        $this->activeLocale = static::getResource()::getDefaultTranslatableLocale();
     }
 
     public function updatingActiveLocale(): void
