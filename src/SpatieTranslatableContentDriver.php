@@ -125,7 +125,7 @@ class SpatieTranslatableContentDriver implements TranslatableContentDriver
 
         $column = match ($databaseConnection->getDriverName()) {
             'pgsql' => "{$column}->>'{$this->activeLocale}'",
-            default => "json_extract({$column}, \"$.{$this->activeLocale}\")",
+            default => "json_extract({$column}, '$.\"{$this->activeLocale}\"')",
         };
 
         $search = generate_search_term_expression($search, $isCaseInsensitivityForced, $databaseConnection);
