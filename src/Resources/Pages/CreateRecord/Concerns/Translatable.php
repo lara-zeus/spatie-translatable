@@ -57,8 +57,7 @@ trait Translatable
 
         foreach ($this->otherLocaleData as $locale => $localeData) {
             try {
-                $this->form->fill($this->form->getRawState());
-                $this->form->validate();
+                $this->form->fill($this->form->getState());
             } catch (ValidationException $exception) {
                 continue;
             }
@@ -82,37 +81,5 @@ trait Translatable
     public function updatingActiveLocale(): void
     {
         $this->oldActiveLocale = $this->activeLocale;
-    }
-
-    public function updatedActiveLocale(string $newActiveLocale): void
-    {
-        if (blank($this->oldActiveLocale)) {
-            return;
-        }
-
-        $this->resetValidation();
-
-        $translatableAttributes = static::getResource()::getTranslatableAttributes();
-
-        try {
-            $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
-                $this->form->getRawState(),
-                $translatableAttributes
-            );
-
-            $this->form->fill([
-                ...Arr::except(
-                    $this->form->getRawState(),
-                    $translatableAttributes
-                ),
-                ...$this->otherLocaleData[$this->activeLocale] ?? [],
-            ]);
-
-            unset($this->otherLocaleData[$this->activeLocale]);
-        } catch (ValidationException $e) {
-            $this->activeLocale = $this->oldActiveLocale;
-
-            throw $e;
-        }
     }
 }

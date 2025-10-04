@@ -48,17 +48,10 @@ trait Translatable
         }
 
         foreach ($this->otherLocaleData as $locale => $localeData) {
-            $existingLocales ??= collect($translatableAttributes)
-                ->map(fn (string $attribute): array => array_keys($record->getTranslations($attribute)))
-                ->flatten()
-                ->unique()
-                ->all();
-
             try {
-                $this->form->fill($this->form->getState(false));
-                $this->form->validate();
+                $this->form->fill($this->form->getState());
             } catch (ValidationException $exception) {
-                if (! array_key_exists($locale, $existingLocales)) {
+                if (! array_key_exists($locale, $record->locales())) {
                     continue;
                 }
 
@@ -82,37 +75,6 @@ trait Translatable
     public function updatingActiveLocale(): void
     {
         $this->oldActiveLocale = $this->activeLocale;
-    }
-
-    public function updatedActiveLocale(): void
-    {
-        if (blank($this->oldActiveLocale)) {
-            return;
-        }
-
-        $this->resetValidation();
-        $translatableAttributes = static::getResource()::getTranslatableAttributes();
-
-        try {
-            $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
-                $this->form->getRawState(),
-                $translatableAttributes
-            );
-
-            $this->form->fill([
-                ...Arr::except(
-                    $this->form->getRawState(),
-                    $translatableAttributes
-                ),
-                ...$this->otherLocaleData[$this->activeLocale] ?? [],
-            ]);
-
-            unset($this->otherLocaleData[$this->activeLocale]);
-        } catch (ValidationException $e) {
-            $this->activeLocale = $this->oldActiveLocale;
-
-            throw $e;
-        }
     }
 
     public function setActiveLocale(string $locale): void

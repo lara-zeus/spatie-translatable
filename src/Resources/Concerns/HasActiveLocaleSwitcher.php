@@ -3,6 +3,8 @@
 namespace LaraZeus\SpatieTranslatable\Resources\Concerns;
 
 use Filament\Support\Contracts\TranslatableContentDriver;
+use Illuminate\Support\Arr;
+use Illuminate\Validation\ValidationException;
 use LaraZeus\SpatieTranslatable\SpatieTranslatableContentDriver;
 
 trait HasActiveLocaleSwitcher
@@ -29,5 +31,37 @@ trait HasActiveLocaleSwitcher
     public function getFilamentTranslatableContentDriver(): ?string
     {
         return SpatieTranslatableContentDriver::class;
+    }
+
+    public function updatedActiveLocale(string $newActiveLocale): void
+    {
+        if (blank($this->oldActiveLocale)) {
+            return;
+        }
+
+        $this->resetValidation();
+
+        $translatableAttributes = static::getResource()::getTranslatableAttributes();
+
+        try {
+            $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
+                $this->form->getState(),
+                $translatableAttributes
+            );
+
+            $this->form->fill([
+                ...Arr::except(
+                    $this->form->getState(),
+                    $translatableAttributes
+                ),
+                ...$this->otherLocaleData[$this->activeLocale] ?? [],
+            ]);
+
+            unset($this->otherLocaleData[$this->activeLocale]);
+        } catch (ValidationException $e) {
+            $this->activeLocale = $this->oldActiveLocale;
+
+            throw $e;
+        }
     }
 }
