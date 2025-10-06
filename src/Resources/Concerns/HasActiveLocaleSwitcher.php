@@ -11,6 +11,8 @@ trait HasActiveLocaleSwitcher
 {
     public ?string $activeLocale = null;
 
+    protected ?string $oldActiveLocale = null;
+
     public function getActiveSchemaLocale(): ?string
     {
         if (! in_array($this->activeLocale, $this->getTranslatableLocales(), true)) {
