@@ -16,7 +16,6 @@ trait Translatable
     use HasTranslatableFormWithExistingRecordData;
     use HasTranslatableRecord;
 
-
     /**
      * @throws Throwable
      */
