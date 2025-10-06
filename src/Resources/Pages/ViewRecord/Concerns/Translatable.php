@@ -16,7 +16,6 @@ trait Translatable
     use HasTranslatableFormWithExistingRecordData;
     use HasTranslatableRecord;
 
-    protected ?string $oldActiveLocale = null;
 
     /**
      * @throws Throwable
