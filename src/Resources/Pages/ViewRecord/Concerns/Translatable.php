@@ -26,7 +26,7 @@ trait Translatable
             new RuntimeException('dont use the trait "' . Translatable::class . '" with "' . static::class . '"')
         );
 
-        $this->activeLocale = static::getResource()::getDefaultTranslatableLocale();
+        $this->activeLocale = $this->getStoredActiveLocale() ?? static::getResource()::getDefaultTranslatableLocale();
     }
 
     public function updatingActiveLocale(): void
@@ -34,8 +34,10 @@ trait Translatable
         $this->oldActiveLocale = $this->activeLocale;
     }
 
-    public function updatedActiveLocale(string $newActiveLocale): void
+    public function updatedActiveLocale(): void
     {
+        session()->put('spatie_translatable_active_locale', $this->activeLocale);
+
         if (blank($this->oldActiveLocale)) {
             return;
         }

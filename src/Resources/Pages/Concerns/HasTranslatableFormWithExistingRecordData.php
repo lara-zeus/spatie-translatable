@@ -11,7 +11,8 @@ trait HasTranslatableFormWithExistingRecordData
 
     protected function fillForm(): void
     {
-        $this->activeLocale ??= $this->getDefaultTranslatableLocale();
+        // check for session first, then fall back to default locale
+        $this->activeLocale ??= $this->getStoredActiveLocale() ?? $this->getDefaultTranslatableLocale();
 
         $record = $this->getRecord();
         $translatableAttributes = static::getResource()::getTranslatableAttributes();
