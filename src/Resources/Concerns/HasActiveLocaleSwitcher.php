@@ -37,8 +37,9 @@ trait HasActiveLocaleSwitcher
 
     public function updatedActiveLocale(): void
     {
-        // Store the selected locale in session for persistence across page loads
-        session()->put('spatie_translatable_active_locale', $this->activeLocale);
+        if (filament('spatie-translatable')->getPersistLocale()) {
+            session()->put('spatie_translatable_active_locale', $this->activeLocale);
+        }
 
         if (blank($this->oldActiveLocale)) {
             return;
@@ -72,6 +73,10 @@ trait HasActiveLocaleSwitcher
 
     protected function getStoredActiveLocale(): ?string
     {
+        if (! filament('spatie-translatable')->getPersistLocale()) {
+            return null;
+        }
+
         $locale = session()->get('spatie_translatable_active_locale');
 
         if ($locale && in_array($locale, $this->getTranslatableLocales(), true)) {
