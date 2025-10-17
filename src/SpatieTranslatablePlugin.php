@@ -12,6 +12,8 @@ class SpatieTranslatablePlugin implements Plugin
 
     protected bool $useFallbackLocale = false;
 
+    protected bool $persistLocale = false;
+
     protected ?Closure $getLocaleLabelUsing = null;
 
     final public function __construct()
@@ -63,6 +65,18 @@ class SpatieTranslatablePlugin implements Plugin
         return $this;
     }
 
+    public function getPersistLocale(): bool
+    {
+        return $this->persistLocale;
+    }
+
+    public function persist(bool $persistLocale = true): static
+    {
+        $this->persistLocale = $persistLocale;
+
+        return $this;
+    }
+
     public function getLocaleLabelUsing(?Closure $callback): static
     {
         $this->getLocaleLabelUsing = $callback;
@@ -72,7 +86,7 @@ class SpatieTranslatablePlugin implements Plugin
 
     public function getLocaleLabel(string $locale, ?string $displayLocale = null): ?string
     {
-        $displayLocale ??= app()->getLocale();
+        $displayLocale ??= session('spatie_translatable_active_locale') ?? app()->getLocale();
 
         $label = null;
 

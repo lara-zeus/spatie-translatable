@@ -26,6 +26,22 @@ public function panel(Panel $panel): Panel
 }
 ```
 
+## Persist active local in Session
+
+to remember the user's selected locale throughout their session, you can pass the method `persist()`
+
+```php
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugin(SpatieTranslatablePlugin::make())
+        ->persist();
+}
+```
+
 ## Setting the default translatable locales
 
 To set up the locales that can be used to translate content, you can pass an array of locales to the `defaultLocales()` plugin method:

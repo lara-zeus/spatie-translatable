@@ -33,7 +33,7 @@ trait Translatable
 
     public function mountTranslatable(): void
     {
-        $this->activeLocale = static::getResource()::getDefaultTranslatableLocale();
+        $this->activeLocale = $this->getStoredActiveLocale() ?? static::getResource()::getDefaultTranslatableLocale();
     }
 
     public function getTranslatableLocales(): array

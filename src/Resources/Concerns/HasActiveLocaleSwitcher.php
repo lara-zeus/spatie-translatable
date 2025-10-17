@@ -35,8 +35,12 @@ trait HasActiveLocaleSwitcher
         return SpatieTranslatableContentDriver::class;
     }
 
-    public function updatedActiveLocale(string $newActiveLocale): void
+    public function updatedActiveLocale(): void
     {
+        if (filament('spatie-translatable')->getPersistLocale()) {
+            session()->put('spatie_translatable_active_locale', $this->activeLocale);
+        }
+
         if (blank($this->oldActiveLocale)) {
             return;
         }
@@ -65,5 +69,20 @@ trait HasActiveLocaleSwitcher
 
             throw $e;
         }
+    }
+
+    protected function getStoredActiveLocale(): ?string
+    {
+        if (! filament('spatie-translatable')->getPersistLocale()) {
+            return null;
+        }
+
+        $locale = session()->get('spatie_translatable_active_locale');
+
+        if ($locale && in_array($locale, $this->getTranslatableLocales(), true)) {
+            return $locale;
+        }
+
+        return null;
     }
 }

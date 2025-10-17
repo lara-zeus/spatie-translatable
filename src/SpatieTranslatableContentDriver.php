@@ -13,10 +13,7 @@ use function Filament\Support\generate_search_term_expression;
 
 class SpatieTranslatableContentDriver implements TranslatableContentDriver
 {
-    public function __construct(protected string $activeLocale)
-    {
-        //
-    }
+    public function __construct(protected string $activeLocale) {}
 
     public function isAttributeTranslatable(string $model, string $attribute): bool
     {

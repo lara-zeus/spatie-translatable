@@ -31,6 +31,11 @@ trait Translatable
         );
     }
 
+    public function mountTranslatable(): void
+    {
+        $this->activeLocale = $this->getStoredActiveLocale() ?? static::getResource()::getDefaultTranslatableLocale();
+    }
+
     public function getTranslatableLocales(): array
     {
         return static::getResource()::getTranslatableLocales();
