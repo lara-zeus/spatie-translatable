@@ -37,8 +37,10 @@ public function panel(Panel $panel): Panel
 {
     return $panel
         // ...
-        ->plugin(SpatieTranslatablePlugin::make())
-        ->persist();
+        ->plugin(
+            SpatieTranslatablePlugin::make()
+                ->persist(),
+        );
 }
 ```
 
