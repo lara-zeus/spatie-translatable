@@ -54,7 +54,7 @@ trait Translatable
 
         foreach ($this->otherLocaleData as $locale => $localeData) {
             try {
-                $this->form->fill($this->form->getState());
+                $this->form->fill($this->form->getState(false));
             } catch (ValidationException $exception) {
                 if (! array_key_exists($locale, $record->locales())) {
                     continue;
