@@ -27,6 +27,11 @@ trait HasActiveLocaleSwitcher
         return $this->activeLocale;
     }
 
+    public function getOldActiveLocale(): ?string
+    {
+        return $this->oldActiveLocale;
+    }
+
     /**
      * @return class-string<TranslatableContentDriver> | null
      */
