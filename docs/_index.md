@@ -1,6 +1,6 @@
 ---
-title: v1
+title: v2
 slogan: Filament support for Spatie's Laravel Translatable package.
 githubUrl: https://github.com/lara-zeus/spatie-translatable
-branch: 1.x
+branch: 2.x
 ---
