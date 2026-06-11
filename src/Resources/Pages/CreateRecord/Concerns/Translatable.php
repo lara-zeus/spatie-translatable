@@ -55,10 +55,35 @@ trait Translatable
             $record->setTranslation($key, $this->activeLocale, $value);
         }
 
-        foreach ($this->otherLocaleData as $locale => $localeData) {
+        $originalData = $this->data;
+
+        $localesToValidate = filament('spatie-translatable')->getValidateAllLocales()
+            ? $this->getTranslatableLocales()
+            : array_keys($this->otherLocaleData);
+
+        foreach ($localesToValidate as $locale) {
+            if ($locale === $this->activeLocale) {
+                continue;
+            }
+
+            $localeData = $this->otherLocaleData[$locale] ?? [];
+
+            $this->data = [
+                ...$this->data,
+                ...$localeData,
+            ];
+
             try {
-                $this->form->fill($this->form->getState());
+                $this->form->validate();
             } catch (ValidationException $exception) {
+                if (filament('spatie-translatable')->getValidateAllLocales()) {
+                    $this->otherLocaleData[$this->activeLocale] = Arr::only($originalData, $translatableAttributes);
+                    unset($this->otherLocaleData[$locale]);
+                    $this->activeLocale = $locale;
+
+                    throw $exception;
+                }
+
                 continue;
             }
 
@@ -68,6 +93,8 @@ trait Translatable
                 $record->setTranslation($key, $locale, $value);
             }
         }
+
+        $this->data = $originalData;
 
         if ($parentRecord = $this->getParentRecord()) {
             return $this->associateRecordWithParent($record, $parentRecord);

@@ -52,17 +52,44 @@ trait Translatable
             $record->setTranslation($key, $this->activeLocale, $value);
         }
 
-        foreach ($this->otherLocaleData as $locale => $localeData) {
+        $originalData = $this->data;
+
+        $localesToValidate = filament('spatie-translatable')->getValidateAllLocales()
+            ? $this->getTranslatableLocales()
+            : array_keys($this->otherLocaleData);
+
+        $existingLocales = null;
+
+        foreach ($localesToValidate as $locale) {
+            if ($locale === $this->activeLocale) {
+                continue;
+            }
+
+            $localeData = $this->otherLocaleData[$locale] ?? [];
+
+            $this->data = [
+                ...$this->data,
+                ...$localeData,
+            ];
+
             try {
-                $this->form->fill($this->form->getState());
+                $this->form->validate();
             } catch (ValidationException $exception) {
-                if (! array_key_exists($locale, $record->locales())) {
-                    continue;
+                $existingLocales ??= collect($translatableAttributes)
+                    ->map(fn (string $attribute): array => array_keys($record->getTranslations($attribute)))
+                    ->flatten()
+                    ->unique()
+                    ->all();
+
+                if (filament('spatie-translatable')->getValidateAllLocales() || in_array($locale, $existingLocales)) {
+                    $this->otherLocaleData[$this->activeLocale] = Arr::only($originalData, $translatableAttributes);
+                    unset($this->otherLocaleData[$locale]);
+                    $this->activeLocale = $locale;
+
+                    throw $exception;
                 }
 
-                $this->setActiveLocale($locale);
-
-                throw $exception;
+                continue;
             }
 
             $localeData = $this->mutateFormDataBeforeSave($localeData);
@@ -72,6 +99,8 @@ trait Translatable
             }
         }
 
+        $this->data = $originalData;
+
         $record->save();
 
         return $record;
@@ -80,12 +109,5 @@ trait Translatable
     public function updatingActiveLocale(): void
     {
         $this->oldActiveLocale = $this->activeLocale;
-    }
-
-    public function setActiveLocale(string $locale): void
-    {
-        $this->updatingActiveLocale();
-        $this->activeLocale = $locale;
-        $this->updatedActiveLocale();
     }
 }

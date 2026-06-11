@@ -65,6 +65,20 @@ class SpatieTranslatablePlugin implements Plugin
         return $this;
     }
 
+    protected bool $validateAllLocales = false;
+
+    public function getValidateAllLocales(): bool
+    {
+        return $this->validateAllLocales;
+    }
+
+    public function validateAllLocales(bool $validateAllLocales = true): static
+    {
+        $this->validateAllLocales = $validateAllLocales;
+
+        return $this;
+    }
+
     public function getPersistLocale(): bool
     {
         return $this->persistLocale;
