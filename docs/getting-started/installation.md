@@ -62,6 +62,27 @@ public function panel(Panel $panel): Panel
 }
 ```
 
+## Validating all configured locales
+    
+By default, Filament only runs form validation for locales that have been actively visited or modified by the user. If you want to ensure that all required fields across every configured locale are validated before a record is saved, you can use the `validateAllLocales()` method:
+
+```php
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugin(
+            SpatieTranslatablePlugin::make()
+                ->defaultLocales(['en', 'es'])
+                ->validateAllLocales()
+        );
+}
+```
+
+When enabled, if validation fails for any locale (even if the user hasn't switched to it), the form will automatically switch to the failing locale tab and display the validation errors.
+
 ## Preparing your model class
 
 You need to make your model translatable. You can read how to do this in [Spatie's documentation](https://spatie.be/docs/laravel-translatable/installation-setup#content-making-a-model-translatable).

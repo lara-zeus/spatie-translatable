@@ -65,6 +65,20 @@ class SpatieTranslatablePlugin implements Plugin
         return $this;
     }
 
+    protected bool $validateAllLocales = false;
+
+    public function getValidateAllLocales(): bool
+    {
+        return $this->validateAllLocales;
+    }
+
+    public function validateAllLocales(bool $validateAllLocales = true): static
+    {
+        $this->validateAllLocales = $validateAllLocales;
+
+        return $this;
+    }
+
     public function getPersistLocale(): bool
     {
         return $this->persistLocale;
@@ -86,7 +100,9 @@ class SpatieTranslatablePlugin implements Plugin
 
     public function getLocaleLabel(string $locale, ?string $displayLocale = null): ?string
     {
-        $displayLocale ??= session('spatie_translatable_active_locale') ?? app()->getLocale();
+        $sessionLocale = session('spatie_translatable_active_locale');
+        /** @var string|null $displayLocale */
+        $displayLocale ??= (is_string($sessionLocale) ? $sessionLocale : null) ?? app()->getLocale();
 
         $label = null;
 

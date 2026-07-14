@@ -13,12 +13,20 @@
         "filament/filament": "^5.0",
         "spatie/laravel-translatable": "^6.0"
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "require-dev": {
-        "roave/security-advisories": "dev-latest",
         "larastan/larastan": "^3.4",
         "laravel/pint": "^1.0",
         "orchestra/testbench": "^10.2",
-        "phpstan/extension-installer": "^1.4"
+        "pestphp/pest": "*",
+        "pestphp/pest-plugin-laravel": "*",
+        "pestphp/pest-plugin-livewire": "*",
+        "phpstan/extension-installer": "^1.4",
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {
@@ -35,8 +43,10 @@
     "config": {
         "sort-packages": true,
         "allow-plugins": {
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "pestphp/pest-plugin": true
         }
     },
-    "prefer-stable": true
+    "prefer-stable": true,
+    "minimum-stability": "dev"
 }

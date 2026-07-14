@@ -22,6 +22,13 @@
 <img alt="filament-logo" src="https://larazeus.com/images/filament-sponsor-banner.webp">
 </a>
 
+## Versions
+
+| Plugin Version | Filament Version |
+| --- |------------------|
+| `v1.x` | `v4.x`           |
+| `v2.x` | `v5.x`           |
+
 ## Introduction
 
 This repository is a fork of the [Filament Spatie Laravel Translatable plugin](https://github.com/filamentphp/spatie-laravel-translatable-plugin), [Lara Zeus](https://larazeus.com).
