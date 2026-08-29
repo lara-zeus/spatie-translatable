@@ -56,13 +56,13 @@ trait HasActiveLocaleSwitcher
 
         try {
             $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
-                $this->form->getState(),
+                $this->form->getRawState(),
                 $translatableAttributes
             );
 
             $this->form->fill([
                 ...Arr::except(
-                    $this->form->getState(),
+                    $this->form->getRawState(),
                     $translatableAttributes
                 ),
                 ...$this->otherLocaleData[$this->activeLocale] ?? [],
