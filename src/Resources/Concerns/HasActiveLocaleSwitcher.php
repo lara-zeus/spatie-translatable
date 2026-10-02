@@ -4,7 +4,6 @@ namespace LaraZeus\SpatieTranslatable\Resources\Concerns;
 
 use Filament\Support\Contracts\TranslatableContentDriver;
 use Illuminate\Support\Arr;
-use Illuminate\Validation\ValidationException;
 use LaraZeus\SpatieTranslatable\SpatieTranslatableContentDriver;
 
 trait HasActiveLocaleSwitcher
@@ -54,26 +53,46 @@ trait HasActiveLocaleSwitcher
 
         $translatableAttributes = static::getResource()::getTranslatableAttributes();
 
-        try {
-            $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
-                $this->form->getState(),
-                $translatableAttributes
-            );
+        $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
+            $this->getUnvalidatedFormState(),
+            $translatableAttributes
+        );
 
-            $this->form->fill([
-                ...Arr::except(
-                    $this->form->getState(),
-                    $translatableAttributes
-                ),
-                ...$this->otherLocaleData[$this->activeLocale] ?? [],
-            ]);
+        // Refill only the translatable fields, so unsaved values of the
+        // other fields, including relationships, are left as they are.
+        $this->form->partialRawState([
+            ...array_fill_keys($translatableAttributes, null),
+            ...Arr::only($this->otherLocaleData[$this->activeLocale] ?? [], $translatableAttributes),
+        ]);
 
-            unset($this->otherLocaleData[$this->activeLocale]);
-        } catch (ValidationException $e) {
-            $this->activeLocale = $this->oldActiveLocale;
+        $statePath = $this->form->getStatePath();
 
-            throw $e;
-        }
+        $this->form->hydrateStatePartially(array_map(
+            fn (string $attribute): string => filled($statePath) ? "{$statePath}.{$attribute}" : $attribute,
+            $translatableAttributes,
+        ));
+
+        unset($this->otherLocaleData[$this->activeLocale]);
+    }
+
+    /**
+     * Dehydrates the form like `getState()`, but without validating it or
+     * saving its relationships. A locale switch must work while the current
+     * locale is incomplete; validation and saving belong to `save()`.
+     *
+     * @return array<string, mixed>
+     */
+    protected function getUnvalidatedFormState(): array
+    {
+        $statePath = $this->form->getStatePath();
+
+        $state = [];
+        data_set($state, $statePath, $this->form->getRawState());
+
+        $this->form->dehydrateState($state);
+        $this->form->mutateDehydratedState($state);
+
+        return data_get($state, $statePath) ?? [];
     }
 
     protected function getStoredActiveLocale(): ?string
