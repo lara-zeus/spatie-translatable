@@ -101,9 +101,9 @@ it('validates required fields across all locales during record creation', functi
     {
         public $data;
 
-        public function __construct($data)
+        public function __construct(&$data)
         {
-            $this->data = $data;
+            $this->data = &$data;
         }
 
         public function validate()
@@ -120,6 +120,36 @@ it('validates required fields across all locales during record creation', functi
         {
             $this->data = $data;
         }
+
+        public function partialRawState($state)
+        {
+            $this->data = [...$this->data, ...$state];
+
+            return $this;
+        }
+
+        public function getStatePath()
+        {
+            return 'data';
+        }
+
+        public function hydrateStatePartially($statePaths) {}
+
+        public function getValidationRules()
+        {
+            return [];
+        }
+
+        public function getRawState()
+        {
+            return $this->data;
+        }
+
+        public function callBeforeStateDehydrated(&$state) {}
+
+        public function dehydrateState(&$state) {}
+
+        public function mutateDehydratedState(&$state) {}
     };
 
     // Simulate other locale data with missing required field
@@ -136,7 +166,9 @@ it('validates required fields across all locales during record creation', functi
     } catch (ValidationException $e) {
         $exceptionThrown = true;
         // Assert that the active locale switched to the failing one
-        expect($component->activeLocale)->toBe('ar');
+        expect($component->activeLocale)->toBe('ar')
+            ->and($component->data['title'])->toBeNull()
+            ->and($component->otherLocaleData['en']['title'])->toBe('English Title');
     }
 
     expect($exceptionThrown)->toBeTrue('ValidationException was not thrown for missing required field in AR locale');
@@ -159,9 +191,9 @@ it('does not throw if validateAllLocales is false and locale is untouched', func
     {
         public $data;
 
-        public function __construct($data)
+        public function __construct(&$data)
         {
-            $this->data = $data;
+            $this->data = &$data;
         }
 
         public function validate()
