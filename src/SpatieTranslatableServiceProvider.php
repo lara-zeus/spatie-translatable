@@ -19,7 +19,11 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'lara-zeus-spatie-translatable');
 
         Column::configureUsing(function (Column $column): void {
-            $column->getStateUsing(function (Column $column, Model $record): mixed {
+            $column->getStateUsing(function (Column $column, Model | array | null $record): mixed {
+                if (! $record instanceof Model) {
+                    return $column->getStateFromRecord();
+                }
+
                 $livewire = $column->getLivewire();
 
                 if (! ($livewire->makeFilamentTranslatableContentDriver() instanceof SpatieTranslatableContentDriver)) {
