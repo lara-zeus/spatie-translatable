@@ -43,7 +43,7 @@ trait Translatable
 
     protected function handleRecordCreation(array $data): Model
     {
-        $record = new ($this->getModel())($data);
+        $record = new ($this->getModel())();
 
         $translatableAttributes = static::getResource()::getTranslatableAttributes();
 
