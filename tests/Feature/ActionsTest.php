@@ -1,45 +1,11 @@
 <?php
 
-namespace Tests\Feature;
-
-use Filament\Actions\Concerns\InteractsWithActions;
-use Filament\Actions\Contracts\HasActions;
 use Filament\Panel;
-use Filament\Schemas\Concerns\InteractsWithSchemas;
-use Filament\Schemas\Contracts\HasSchemas;
 use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use LaraZeus\SpatieTranslatable\Tables\Actions\LocaleSwitcher as TableLocaleSwitcher;
-use Livewire\Component;
-
-class TranslatableActionLivewire extends Component implements HasActions, HasSchemas
-{
-    use InteractsWithActions;
-    use InteractsWithSchemas;
-
-    public ?string $activeLocale = 'en';
-
-    public function getTranslatableLocales(): array
-    {
-        return ['en', 'ar'];
-    }
-
-    public function render(): string
-    {
-        return '<div></div>';
-    }
-}
-
-class NonTranslatableActionLivewire extends Component implements HasActions, HasSchemas
-{
-    use InteractsWithActions;
-    use InteractsWithSchemas;
-
-    public function render(): string
-    {
-        return '<div></div>';
-    }
-}
+use Tests\Fixtures\Livewire\NonTranslatableActionLivewire;
+use Tests\Fixtures\Livewire\TranslatableActionLivewire;
 
 beforeEach(function () {
     $panel = Panel::make()

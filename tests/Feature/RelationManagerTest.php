@@ -1,166 +1,29 @@
 <?php
 
-namespace Tests\Feature;
-
 use Filament\Actions\CreateAction;
-use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Panel;
-use Filament\Resources\Pages\CreateRecord;
-use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Resources\Resource;
-use Filament\Schemas\Schema;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema as DatabaseSchema;
-use LaraZeus\SpatieTranslatable\Actions\LocaleSwitcher;
-use LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable as TranslatableResource;
-use LaraZeus\SpatieTranslatable\Resources\Pages\CreateRecord\Concerns\Translatable as CreateTranslatable;
-use LaraZeus\SpatieTranslatable\Resources\RelationManagers\Concerns\Translatable as RelationManagerTranslatable;
+use Illuminate\Support\Facades\Schema;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
-use Livewire\Livewire;
-use Spatie\Translatable\HasTranslations;
+use Tests\Fixtures\Models\RmComment;
+use Tests\Fixtures\Models\RmPost;
+use Tests\Fixtures\RelationManagers\PlainCommentsRelationManager;
+use Tests\Fixtures\RelationManagers\RmCommentsRelationManager;
+use Tests\Fixtures\RelationManagers\RmCommentsWithoutPluginRelationManager;
+use Tests\Fixtures\Resources\Pages\CreateRmPost;
+use Tests\Fixtures\Resources\Pages\EditArticle;
+use Tests\Fixtures\Resources\RmPostResource;
 
-class RmPost extends Model
-{
-    use HasTranslations;
-
-    protected $table = 'rm_posts';
-
-    protected $guarded = [];
-
-    public array $translatable = ['title'];
-
-    public function comments()
-    {
-        return $this->hasMany(RmComment::class, 'post_id');
-    }
-}
-
-class RmComment extends Model
-{
-    use HasTranslations;
-
-    protected $table = 'rm_comments';
-
-    protected $guarded = [];
-
-    public array $translatable = ['body'];
-}
-
-class RmCommentsRelationManager extends RelationManager
-{
-    use RelationManagerTranslatable;
-
-    protected static string $relationship = 'comments';
-
-    public function form(Schema $schema): Schema
-    {
-        return $schema->components([
-            TextInput::make('body')->required(),
-        ]);
-    }
-
-    public function table(Table $table): Table
-    {
-        return $table
-            ->recordTitleAttribute('body')
-            ->columns([
-                TextColumn::make('id'),
-                TextColumn::make('body'),
-            ])
-            ->headerActions([
-                LocaleSwitcher::make(),
-                CreateAction::make(),
-            ])
-            ->recordActions([
-                EditAction::make(),
-            ]);
-    }
-}
-
-class RmCommentsWithoutPluginRelationManager extends RmCommentsRelationManager
-{
-    public function getTranslatableLocales(): array
-    {
-        return ['fr', 'en'];
-    }
-
-    public function getActiveTableLocale(): ?string
-    {
-        return null;
-    }
-
-    public function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('body'),
-            ]);
-    }
-}
-
-class PlainCommentsRelationManager extends RelationManager
-{
-    protected static string $relationship = 'comments';
-
-    public function table(Table $table): Table
-    {
-        return $table
-            ->columns([
-                TextColumn::make('id'),
-            ]);
-    }
-}
-
-class RmPostResource extends Resource
-{
-    use TranslatableResource;
-
-    protected static ?string $model = RmPost::class;
-
-    public static function form(Schema $schema): Schema
-    {
-        return $schema->components([
-            TextInput::make('title')->required(),
-        ]);
-    }
-
-    public static function getIndexUrl(array $parameters = [], bool $isAbsolute = true, ?string $panel = null, ?Model $tenant = null, bool $shouldGuessMissingParameters = false): string
-    {
-        return '/';
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'create' => CreateRmPost::route('/create'),
-        ];
-    }
-}
-
-class CreateRmPost extends CreateRecord
-{
-    use CreateTranslatable;
-
-    protected static string $resource = RmPostResource::class;
-
-    protected function getRedirectUrl(): string
-    {
-        return '/';
-    }
-}
+use function Pest\Livewire\livewire;
 
 beforeEach(function () {
-    DatabaseSchema::create('rm_posts', function (Blueprint $table) {
+    Schema::create('rm_posts', function (Blueprint $table) {
         $table->id();
         $table->json('title')->nullable();
         $table->timestamps();
     });
 
-    DatabaseSchema::create('rm_comments', function (Blueprint $table) {
+    Schema::create('rm_comments', function (Blueprint $table) {
         $table->id();
         $table->foreignId('post_id');
         $table->json('body')->nullable();
@@ -183,7 +46,7 @@ it('does not display fallback locale in relation manager table when useFallbackL
     $post = RmPost::create(['title' => ['fr' => 'Post FR']]);
     $post->comments()->create(['body' => ['fr' => 'Test FR']]);
 
-    Livewire::test(RmCommentsRelationManager::class, [
+    livewire(RmCommentsRelationManager::class, [
         'ownerRecord' => $post,
         'pageClass' => EditArticle::class,
     ])
@@ -198,7 +61,7 @@ it('displays fallback locale in relation manager table when useFallbackLocale is
     $post = RmPost::create(['title' => ['fr' => 'Post FR']]);
     $post->comments()->create(['body' => ['fr' => 'Test FR']]);
 
-    Livewire::test(RmCommentsRelationManager::class, [
+    livewire(RmCommentsRelationManager::class, [
         'ownerRecord' => $post,
         'pageClass' => EditArticle::class,
     ])
@@ -209,7 +72,7 @@ it('displays fallback locale in relation manager table when useFallbackLocale is
 it('does not duplicate secondary locale into primary locale when creating in relation manager (issue #42)', function () {
     $post = RmPost::create(['title' => ['fr' => 'Post FR']]);
 
-    Livewire::test(RmCommentsRelationManager::class, [
+    livewire(RmCommentsRelationManager::class, [
         'ownerRecord' => $post,
         'pageClass' => EditArticle::class,
     ])
@@ -228,7 +91,7 @@ it('falls back to default column state on non-translatable tables', function () 
     $post = RmPost::create(['title' => ['fr' => 'Post FR']]);
     $post->comments()->create(['body' => ['fr' => 'Test FR']]);
 
-    Livewire::test(PlainCommentsRelationManager::class, [
+    livewire(PlainCommentsRelationManager::class, [
         'ownerRecord' => $post,
         'pageClass' => EditArticle::class,
     ])
@@ -247,7 +110,7 @@ it('does not duplicate secondary locale into primary locale on CreateRecord (iss
     filament()->registerPanel($panel);
     filament()->setCurrentPanel($panel);
 
-    Livewire::test(CreateRmPost::class)
+    livewire(CreateRmPost::class)
         ->set('activeLocale', 'en')
         ->set('data.title', 'My title')
         ->call('create')
@@ -271,7 +134,7 @@ it('defaults useFallbackLocale to false when panel has no spatie-translatable pl
 
     app()->setLocale('en');
 
-    Livewire::test(RmCommentsWithoutPluginRelationManager::class, [
+    livewire(RmCommentsWithoutPluginRelationManager::class, [
         'ownerRecord' => $post,
         'pageClass' => EditArticle::class,
     ])
