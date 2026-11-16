@@ -104,11 +104,18 @@ class SpatieTranslatableContentDriver implements TranslatableContentDriver
             return $attributes;
         }
 
+        /** @var ?SpatieTranslatablePlugin $plugin */
+        $plugin = filament()->getCurrentPanel()?->hasPlugin('spatie-translatable')
+            ? filament('spatie-translatable')
+            : null;
+
+        $useFallbackLocale = $plugin?->getUseFallbackLocale() ?? false;
+
         foreach ($record->getTranslatableAttributes() as $attribute) {
             $attributes[$attribute] = $record->getTranslation(
                 $attribute,
                 $this->activeLocale,
-                useFallbackLocale: (new SpatieTranslatablePlugin)->getUseFallbackLocale()
+                useFallbackLocale: $useFallbackLocale,
             );
         }
 
@@ -124,6 +131,8 @@ class SpatieTranslatableContentDriver implements TranslatableContentDriver
             'pgsql' => "{$column}->>'{$this->activeLocale}'",
             default => "json_extract({$column}, '$.\"{$this->activeLocale}\"')",
         };
+
+        $isCaseInsensitivityForced ??= true;
 
         $search = generate_search_term_expression($search, $isCaseInsensitivityForced, $databaseConnection);
 

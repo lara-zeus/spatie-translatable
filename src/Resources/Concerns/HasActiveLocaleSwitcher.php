@@ -47,13 +47,13 @@ trait HasActiveLocaleSwitcher
             session()->put('spatie_translatable_active_locale', $this->activeLocale);
         }
 
-        if (blank($this->oldActiveLocale)) {
+        if (blank($this->oldActiveLocale) || ! property_exists($this, 'otherLocaleData')) {
             return;
         }
 
         $this->resetValidation();
 
-        $translatableAttributes = static::getResource()::getTranslatableAttributes();
+        $translatableAttributes = $this->getTranslatableAttributes();
 
         try {
             $this->otherLocaleData[$this->oldActiveLocale] = Arr::only(
@@ -84,7 +84,7 @@ trait HasActiveLocaleSwitcher
      */
     protected function fillTranslatableFormState(array $data): void
     {
-        $data = Arr::only($data, static::getResource()::getTranslatableAttributes());
+        $data = Arr::only($data, $this->getTranslatableAttributes());
 
         $this->form->partialRawState($data);
 
@@ -154,5 +154,23 @@ trait HasActiveLocaleSwitcher
         }
 
         return null;
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function getTranslatableAttributes(): array
+    {
+        if (method_exists(static::class, 'getResource')) {
+            return static::getResource()::getTranslatableAttributes();
+        }
+
+        if (method_exists($this, 'getRelationship')) {
+            $model = $this->getRelationship()->getRelated();
+
+            return method_exists($model, 'getTranslatableAttributes') ? $model->getTranslatableAttributes() : [];
+        }
+
+        return [];
     }
 }
