@@ -2,6 +2,7 @@
 
 namespace LaraZeus\SpatieTranslatable\Resources\Pages\Concerns;
 
+use Illuminate\Support\Arr;
 use Livewire\Attributes\Locked;
 
 trait HasTranslatableFormWithExistingRecordData
@@ -52,6 +53,6 @@ trait HasTranslatableFormWithExistingRecordData
 
         $resourceLocales = $this->getTranslatableLocales();
 
-        return array_intersect($availableLocales, $resourceLocales)[0] ?? $defaultLocale;
+        return Arr::first(array_intersect($availableLocales, $resourceLocales)) ?? $defaultLocale;
     }
 }

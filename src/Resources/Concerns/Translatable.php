@@ -2,6 +2,7 @@
 
 namespace LaraZeus\SpatieTranslatable\Resources\Concerns;
 
+use Illuminate\Support\Arr;
 use RuntimeException;
 use Spatie\Translatable\HasTranslations;
 
@@ -9,7 +10,8 @@ trait Translatable
 {
     public static function getDefaultTranslatableLocale(): string
     {
-        return static::getTranslatableLocales()[0];
+        /** @var string */
+        return Arr::first(static::getTranslatableLocales()) ?? '';
     }
 
     /**

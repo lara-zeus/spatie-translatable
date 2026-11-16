@@ -104,11 +104,18 @@ class SpatieTranslatableContentDriver implements TranslatableContentDriver
             return $attributes;
         }
 
+        /** @var ?SpatieTranslatablePlugin $plugin */
+        $plugin = filament()->getCurrentPanel()?->hasPlugin('spatie-translatable')
+            ? filament('spatie-translatable')
+            : null;
+
+        $useFallbackLocale = $plugin?->getUseFallbackLocale() ?? false;
+
         foreach ($record->getTranslatableAttributes() as $attribute) {
             $attributes[$attribute] = $record->getTranslation(
                 $attribute,
                 $this->activeLocale,
-                useFallbackLocale: (new SpatieTranslatablePlugin)->getUseFallbackLocale()
+                useFallbackLocale: $useFallbackLocale,
             );
         }
 
