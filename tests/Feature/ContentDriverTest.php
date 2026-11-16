@@ -1,49 +1,17 @@
 <?php
 
-namespace Tests\Feature;
-
 use Filament\Panel;
 use Illuminate\Contracts\Database\Query\Expression;
 use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Grammars\PostgresGrammar;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use LaraZeus\SpatieTranslatable\SpatieTranslatableContentDriver;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
-use Mockery;
-use Spatie\Translatable\HasTranslations;
-
-class DriverTranslatablePost extends Model
-{
-    use HasTranslations;
-
-    protected $table = 'driver_posts';
-
-    protected $guarded = [];
-
-    public array $translatable = ['title'];
-}
-
-class DriverPlainPost extends Model
-{
-    protected $table = 'driver_plain_posts';
-
-    protected $guarded = [];
-}
-
-class DriverCustomTranslatablePost extends Model
-{
-    protected $table = 'driver_plain_posts';
-
-    protected $guarded = [];
-
-    public function getTranslatableAttributes(): array
-    {
-        return ['title'];
-    }
-}
+use Tests\Fixtures\Models\DriverCustomTranslatablePost;
+use Tests\Fixtures\Models\DriverPlainPost;
+use Tests\Fixtures\Models\DriverTranslatablePost;
 
 beforeEach(function () {
     Schema::create('driver_posts', function (Blueprint $table) {
