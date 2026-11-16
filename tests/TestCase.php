@@ -2,14 +2,9 @@
 
 namespace Tests;
 
-use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
-use BladeUI\Icons\BladeIconsServiceProvider;
 use Filament\Actions\ActionsServiceProvider;
 use Filament\FilamentServiceProvider;
 use Filament\Forms\FormsServiceProvider;
-use Filament\Infolists\InfolistsServiceProvider;
-use Filament\Notifications\NotificationsServiceProvider;
-use Filament\Schemas\SchemasServiceProvider;
 use Filament\Support\SupportServiceProvider;
 use Filament\Tables\TablesServiceProvider;
 use Filament\Widgets\WidgetsServiceProvider;
@@ -47,17 +42,10 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            // Filament binds its own Livewire DataStore, so it must register
-            // before Livewire, as it does in an app with package discovery.
-            SupportServiceProvider::class,
             LivewireServiceProvider::class,
-            BladeIconsServiceProvider::class,
-            BladeHeroiconsServiceProvider::class,
+            SupportServiceProvider::class,
             FilamentServiceProvider::class,
-            SchemasServiceProvider::class,
             FormsServiceProvider::class,
-            InfolistsServiceProvider::class,
-            NotificationsServiceProvider::class,
             TablesServiceProvider::class,
             ActionsServiceProvider::class,
             WidgetsServiceProvider::class,

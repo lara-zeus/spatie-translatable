@@ -68,21 +68,16 @@ trait Translatable
 
             $localeData = $this->otherLocaleData[$locale] ?? [];
 
-            $this->fillTranslatableFormState($localeData);
+            $this->data = [
+                ...$this->data,
+                ...$localeData,
+            ];
 
             try {
                 $this->form->validate();
             } catch (ValidationException $exception) {
                 if (filament('spatie-translatable')->getValidateAllLocales()) {
-                    // Keep the active locale dehydrated, like the other locales.
-                    // `getState()` already ran its hooks, so don't run them again.
-                    $failedLocaleState = $this->data;
-                    $this->data = $originalData;
-                    $this->otherLocaleData[$this->activeLocale] = Arr::only(
-                        $this->getUnvalidatedFormState(shouldCallHooksBefore: false),
-                        $translatableAttributes
-                    );
-                    $this->data = $failedLocaleState;
+                    $this->otherLocaleData[$this->activeLocale] = Arr::only($originalData, $translatableAttributes);
                     unset($this->otherLocaleData[$locale]);
                     $this->activeLocale = $locale;
 
