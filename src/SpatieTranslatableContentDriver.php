@@ -132,6 +132,8 @@ class SpatieTranslatableContentDriver implements TranslatableContentDriver
             default => "json_extract({$column}, '$.\"{$this->activeLocale}\"')",
         };
 
+        $isCaseInsensitivityForced ??= true;
+
         $search = generate_search_term_expression($search, $isCaseInsensitivityForced, $databaseConnection);
 
         return $query->{$whereClause}(
