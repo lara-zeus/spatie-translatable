@@ -3,6 +3,7 @@
 namespace LaraZeus\SpatieTranslatable\Resources\Pages\ViewRecord\Concerns;
 
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use LaraZeus\SpatieTranslatable\Resources\Concerns\HasActiveLocaleSwitcher;
 use LaraZeus\SpatieTranslatable\Resources\Pages\Concerns\HasTranslatableFormWithExistingRecordData;
@@ -29,8 +30,16 @@ trait Translatable
 
     public function mountTranslatable(): void
     {
-        $this->activeLocale = $this->getStoredActiveLocale()
-            ?? static::getResource()::getDefaultTranslatableLocale();
+        $hasRecord = isset($this->record) && ($this->record instanceof Model);
+
+        $this->activeLocale ??= $this->getStoredActiveLocale()
+            ?? ($hasRecord
+                ? $this->getDefaultTranslatableLocale()
+                : static::getResource()::getDefaultTranslatableLocale());
+
+        if ($hasRecord) {
+            $this->getRecord();
+        }
     }
 
     public function updatingActiveLocale(): void
@@ -42,6 +51,10 @@ trait Translatable
     {
         if (filament('spatie-translatable')->getPersistLocale()) {
             session()->put('spatie_translatable_active_locale', $this->activeLocale);
+        }
+
+        if (isset($this->record) && ($this->record instanceof Model)) {
+            $this->getRecord();
         }
 
         if (blank($this->oldActiveLocale)) {

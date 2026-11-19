@@ -12,12 +12,14 @@ use Tests\Fixtures\Resources\EmptyTranslatableArticleResource;
 use Tests\Fixtures\Resources\NonTranslatableArticleResource;
 use Tests\Fixtures\Resources\Pages\CreateArticle;
 use Tests\Fixtures\Resources\Pages\EditArticle;
+use Tests\Fixtures\Resources\Pages\EditArticleWithCustomDefaultLocale;
 use Tests\Fixtures\Resources\Pages\InvalidCreatePage;
 use Tests\Fixtures\Resources\Pages\InvalidEditPage;
 use Tests\Fixtures\Resources\Pages\InvalidListPage;
 use Tests\Fixtures\Resources\Pages\InvalidViewPage;
 use Tests\Fixtures\Resources\Pages\ListArticles;
 use Tests\Fixtures\Resources\Pages\ViewArticle;
+use Tests\Fixtures\Resources\Pages\ViewArticleWithInfolist;
 use Tests\Fixtures\Support\FakeTranslatableForm;
 
 use function Pest\Livewire\livewire;
@@ -199,4 +201,92 @@ it('validates all locales on EditRecord when validateAllLocales is enabled', fun
         ->call('save')
         ->assertHasErrors(['data.title' => 'required'])
         ->assertSet('activeLocale', 'ar');
+});
+
+it('keeps the active locale set by fillForm on EditRecord when record only has a non-default locale', function () {
+    $article = Article::create([
+        'title' => ['ar' => 'مرحبا'],
+    ]);
+
+    livewire(EditArticle::class, ['record' => $article->getKey()])
+        ->assertSet('activeLocale', 'ar')
+        ->assertSet('data.title', 'مرحبا')
+        ->set('activeLocale', 'en')
+        ->assertSet('data.title', null)
+        ->set('activeLocale', 'ar')
+        ->assertSet('data.title', 'مرحبا')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($article->refresh()->getTranslations('title'))->toBe(['ar' => 'مرحبا']);
+});
+
+it('does not overwrite default locale on EditRecord save when record only has a non-default locale', function () {
+    $article = Article::create([
+        'title' => ['ar' => 'مرحبا'],
+    ]);
+
+    livewire(EditArticle::class, ['record' => $article->getKey()])
+        ->assertSet('activeLocale', 'ar')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($article->refresh()->getTranslations('title'))->toBe(['ar' => 'مرحبا']);
+});
+
+it('respects overridden getDefaultTranslatableLocale on EditRecord', function () {
+    $article = Article::create([
+        'title' => ['en' => 'English Title', 'ar' => 'عنوان عربي'],
+    ]);
+
+    livewire(EditArticleWithCustomDefaultLocale::class, ['record' => $article->getKey()])
+        ->assertSet('activeLocale', 'ar')
+        ->assertSet('data.title', 'عنوان عربي')
+        ->set('activeLocale', 'en')
+        ->assertSet('data.title', 'English Title')
+        ->set('activeLocale', 'ar')
+        ->assertSet('data.title', 'عنوان عربي')
+        ->call('save')
+        ->assertHasNoErrors();
+
+    expect($article->refresh()->getTranslations('title'))
+        ->toEqualCanonicalizing(['en' => 'English Title', 'ar' => 'عنوان عربي']);
+});
+
+it('keeps the active locale set by fillForm on form-based ViewRecord when record only has a non-default locale', function () {
+    $article = Article::create([
+        'title' => ['ar' => 'عرض عربي'],
+    ]);
+
+    livewire(ViewArticle::class, ['record' => $article->getKey()])
+        ->assertSet('activeLocale', 'ar')
+        ->assertSet('data.title', 'عرض عربي')
+        ->set('activeLocale', 'en')
+        ->assertSet('data.title', '')
+        ->set('activeLocale', 'ar')
+        ->assertSet('data.title', 'عرض عربي');
+});
+
+it('sets active locale to available record locale on infolist-based ViewRecord', function () {
+    $article = Article::create([
+        'title' => ['ar' => 'عرض عربي'],
+    ]);
+
+    livewire(ViewArticleWithInfolist::class, ['record' => $article->getKey()])
+        ->assertSet('activeLocale', 'ar')
+        ->assertSee('عرض عربي');
+});
+
+it('switches locales on infolist-based ViewRecord', function () {
+    $article = Article::create([
+        'title' => ['en' => 'English View', 'ar' => 'عرض عربي'],
+    ]);
+
+    livewire(ViewArticleWithInfolist::class, ['record' => $article->getKey()])
+        ->assertSet('activeLocale', 'en')
+        ->assertSee('English View')
+        ->set('activeLocale', 'ar')
+        ->assertSee('عرض عربي')
+        ->set('activeLocale', 'en')
+        ->assertSee('English View');
 });
