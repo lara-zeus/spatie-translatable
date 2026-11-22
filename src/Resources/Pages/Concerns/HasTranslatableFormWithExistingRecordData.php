@@ -10,6 +10,9 @@ trait HasTranslatableFormWithExistingRecordData
     #[Locked]
     public array $otherLocaleData = [];
 
+    #[Locked]
+    public array $otherLocaleRelationshipData = [];
+
     protected function fillForm(): void
     {
         // check for session first, then fall back to default locale
@@ -38,6 +41,8 @@ trait HasTranslatableFormWithExistingRecordData
             /** @internal Read the DocBlock above the following method. */
             $this->fillFormWithDataAndCallHooks($record, $translatedData);
         }
+
+        $this->fillOtherLocaleRelationshipData();
     }
 
     protected function getDefaultTranslatableLocale(): string

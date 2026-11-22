@@ -20,6 +20,19 @@ trait Translatable
     #[Locked]
     public array $otherLocaleData = [];
 
+    #[Locked]
+    public array $otherLocaleRelationshipData = [];
+
+    /**
+     * @var array<int, string>
+     */
+    protected array $validatedOtherLocales = [];
+
+    /**
+     * @var array<int, array<string, mixed>>
+     */
+    protected array $preSaveRelationshipStructure = [];
+
     /**
      * @throws Throwable
      */
@@ -56,10 +69,18 @@ trait Translatable
         }
 
         $originalData = $this->data;
+        $originalRelationshipSnapshot = $this->getUnvalidatedTranslatableRelationshipState();
+        $relationshipPaths = array_keys($originalRelationshipSnapshot);
+        $validateAllLocales = filament('spatie-translatable')->getValidateAllLocales();
 
-        $localesToValidate = filament('spatie-translatable')->getValidateAllLocales()
+        $this->validatedOtherLocales = [];
+
+        $localesToValidate = $validateAllLocales
             ? $this->getTranslatableLocales()
-            : array_keys($this->otherLocaleData);
+            : array_values(array_unique([
+                ...array_keys($this->otherLocaleData),
+                ...array_keys($this->otherLocaleRelationshipData),
+            ]));
 
         foreach ($localesToValidate as $locale) {
             if ($locale === $this->activeLocale) {
@@ -67,13 +88,28 @@ trait Translatable
             }
 
             $localeData = $this->otherLocaleData[$locale] ?? [];
+            $localeRelationshipData = $this->otherLocaleRelationshipData[$locale] ?? [];
 
-            $this->fillTranslatableFormState($localeData);
+            $this->fillTranslatableFormState([
+                ...array_fill_keys($translatableAttributes, null),
+                ...$localeData,
+            ]);
+
+            if (filled($relationshipPaths)) {
+                $relationshipStateToFill = $validateAllLocales
+                    ? [
+                        ...array_fill_keys($relationshipPaths, null),
+                        ...Arr::only($localeRelationshipData, $relationshipPaths),
+                    ]
+                    : Arr::only($localeRelationshipData, $relationshipPaths);
+
+                $this->fillTranslatableRelationshipState($relationshipStateToFill);
+            }
 
             try {
                 $this->form->validate();
             } catch (ValidationException $exception) {
-                if (filament('spatie-translatable')->getValidateAllLocales()) {
+                if ($validateAllLocales) {
                     // Keep the active locale dehydrated, like the other locales.
                     // `getState()` already ran its hooks, so don't run them again.
                     $failedLocaleState = $this->data;
@@ -82,8 +118,9 @@ trait Translatable
                         $this->getUnvalidatedFormState(shouldCallHooksBefore: false),
                         $translatableAttributes
                     );
+                    $this->otherLocaleRelationshipData[$this->activeLocale] = $originalRelationshipSnapshot;
                     $this->data = $failedLocaleState;
-                    unset($this->otherLocaleData[$locale]);
+                    unset($this->otherLocaleData[$locale], $this->otherLocaleRelationshipData[$locale]);
                     $this->activeLocale = $locale;
 
                     throw $exception;
@@ -91,6 +128,8 @@ trait Translatable
 
                 continue;
             }
+
+            $this->validatedOtherLocales[] = $locale;
 
             $localeData = $this->mutateFormDataBeforeCreate($localeData);
 
@@ -100,6 +139,7 @@ trait Translatable
         }
 
         $this->data = $originalData;
+        $this->preSaveRelationshipStructure = $this->captureRelationshipStructure();
 
         if ($parentRecord = $this->getParentRecord()) {
             return $this->associateRecordWithParent($record, $parentRecord);
@@ -108,6 +148,20 @@ trait Translatable
         $record->save();
 
         return $record;
+    }
+
+    protected function afterCreateTranslatable(): void
+    {
+        if (filled($this->validatedOtherLocales) && filled($this->preSaveRelationshipStructure)) {
+            $this->saveOtherLocaleRelationshipTranslations(
+                $this->getRecord(),
+                $this->validatedOtherLocales,
+                $this->preSaveRelationshipStructure,
+            );
+        }
+
+        $this->validatedOtherLocales = [];
+        $this->preSaveRelationshipStructure = [];
     }
 
     public function updatingActiveLocale(): void

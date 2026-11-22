@@ -68,6 +68,20 @@ trait Translatable
             ...$this->data,
             ...$this->otherLocaleData[$this->activeLocale] ?? [],
         ];
+
+        $nextRelationshipData = $this->otherLocaleRelationshipData[$this->activeLocale] ?? [];
+
+        if (filled($nextRelationshipData)) {
+            $oldRelationshipData = [];
+
+            foreach ($nextRelationshipData as $path => $value) {
+                $oldRelationshipData[$path] = Arr::get($this->data, $path);
+                Arr::set($this->data, $path, $value);
+            }
+
+            $this->otherLocaleRelationshipData[$this->oldActiveLocale] = $oldRelationshipData;
+            unset($this->otherLocaleRelationshipData[$this->activeLocale]);
+        }
     }
 
     public function getTranslatableLocales(): array
