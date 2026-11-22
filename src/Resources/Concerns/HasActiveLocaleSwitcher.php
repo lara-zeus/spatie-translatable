@@ -72,7 +72,12 @@ trait HasActiveLocaleSwitcher
 
         if (property_exists($this, 'otherLocaleRelationshipData')) {
             $currentRelationshipSnapshot = $this->getUnvalidatedTranslatableRelationshipState();
-            $this->otherLocaleRelationshipData[$this->oldActiveLocale] = $currentRelationshipSnapshot;
+
+            if (filled($currentRelationshipSnapshot)) {
+                $this->otherLocaleRelationshipData[$this->oldActiveLocale] = $currentRelationshipSnapshot;
+            } else {
+                unset($this->otherLocaleRelationshipData[$this->oldActiveLocale]);
+            }
         }
 
         // Refill only the translatable fields, so unsaved values of the

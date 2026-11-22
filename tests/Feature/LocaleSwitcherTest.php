@@ -102,8 +102,10 @@ it('does not save relationships when switching locale', function () {
     $post->seo()->create(['description' => 'Original']);
 
     $page = livewire(EditPost::class, ['record' => $post->getKey()])
+        ->assertSet('otherLocaleRelationshipData', [])
         ->set('data.seo.description', 'Changed')
-        ->set('activeLocale', 'ar');
+        ->set('activeLocale', 'ar')
+        ->assertSet('otherLocaleRelationshipData', []);
 
     expect($post->seo()->value('description'))->toBe('Original');
 

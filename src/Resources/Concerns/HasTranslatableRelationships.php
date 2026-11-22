@@ -87,7 +87,11 @@ trait HasTranslatableRelationships
         );
 
         foreach ($otherLocales as $locale) {
-            $this->otherLocaleRelationshipData[$locale] = $collected[$locale];
+            if (filled($collected[$locale])) {
+                $this->otherLocaleRelationshipData[$locale] = $collected[$locale];
+            } else {
+                unset($this->otherLocaleRelationshipData[$locale]);
+            }
         }
     }
 
@@ -103,6 +107,10 @@ trait HasTranslatableRelationships
         array &$collected,
     ): void {
         foreach ($schema->getComponents(withActions: false, withHidden: true) as $component) {
+            if ($component->isHidden() && ! $component->shouldSaveRelationshipsWhenHidden()) {
+                continue;
+            }
+
             if (($component instanceof Repeater) && $component->hasRelationship()) {
                 $translatableAttributes = $this->getModelTranslatableAttributes($component->getRelatedModel());
                 $existingRecords = $component->getCachedExistingRecords();
@@ -211,6 +219,10 @@ trait HasTranslatableRelationships
     protected function collectTranslatableRelationshipState(Schema $schema, ?string $rootStatePath, array &$state): void
     {
         foreach ($schema->getComponents(withActions: false, withHidden: true) as $component) {
+            if ($component->isHidden() && ! $component->shouldSaveRelationshipsWhenHidden()) {
+                continue;
+            }
+
             if (($component instanceof Repeater) && $component->hasRelationship()) {
                 $translatableAttributes = $this->getModelTranslatableAttributes($component->getRelatedModel());
 
@@ -303,6 +315,10 @@ trait HasTranslatableRelationships
         $nodes = [];
 
         foreach ($schema->getComponents(withActions: false, withHidden: true) as $component) {
+            if ($component->isHidden() && ! $component->shouldSaveRelationshipsWhenHidden()) {
+                continue;
+            }
+
             if (($component instanceof Repeater) && $component->hasRelationship()) {
                 $relationshipName = $component->getRelationshipName();
 
@@ -313,25 +329,33 @@ trait HasTranslatableRelationships
                 $translatableAttributes = $this->getModelTranslatableAttributes($component->getRelatedModel());
                 $existingRecords = $component->getCachedExistingRecords();
                 $items = [];
+                $hasTranslatableContent = false;
 
                 foreach ($component->getItems() as $itemKey => $itemSchema) {
                     $dehydratedAttributes = filled($translatableAttributes)
                         ? array_keys(Arr::only($itemSchema->getStateSnapshot(), $translatableAttributes))
                         : [];
+                    $children = $this->captureRelationshipNodes($itemSchema, $rootStatePath);
+
+                    if (filled($dehydratedAttributes) || filled($children)) {
+                        $hasTranslatableContent = true;
+                    }
 
                     $items[(string) $itemKey] = [
                         'isExisting' => $existingRecords->has($itemKey),
                         'dehydratedAttributes' => $dehydratedAttributes,
-                        'children' => $this->captureRelationshipNodes($itemSchema, $rootStatePath),
+                        'children' => $children,
                     ];
                 }
 
-                $nodes[] = [
-                    'type' => 'repeater',
-                    'relationship' => $relationshipName,
-                    'statePath' => $this->getRelativeStatePath((string) $component->getStatePath(), $rootStatePath),
-                    'items' => $items,
-                ];
+                if ($hasTranslatableContent) {
+                    $nodes[] = [
+                        'type' => 'repeater',
+                        'relationship' => $relationshipName,
+                        'statePath' => $this->getRelativeStatePath((string) $component->getStatePath(), $rootStatePath),
+                        'items' => $items,
+                    ];
+                }
 
                 continue;
             }
@@ -348,14 +372,17 @@ trait HasTranslatableRelationships
                 $dehydratedAttributes = filled($translatableAttributes)
                     ? array_keys(Arr::only($childSchema->getStateSnapshot(), $translatableAttributes))
                     : [];
+                $children = $this->captureRelationshipNodes($childSchema, $rootStatePath);
 
-                $nodes[] = [
-                    'type' => 'singular',
-                    'relationship' => $relationshipName,
-                    'statePath' => $this->getRelativeStatePath((string) $childSchema->getStatePath(), $rootStatePath),
-                    'dehydratedAttributes' => $dehydratedAttributes,
-                    'children' => $this->captureRelationshipNodes($childSchema, $rootStatePath),
-                ];
+                if (filled($dehydratedAttributes) || filled($children)) {
+                    $nodes[] = [
+                        'type' => 'singular',
+                        'relationship' => $relationshipName,
+                        'statePath' => $this->getRelativeStatePath((string) $childSchema->getStatePath(), $rootStatePath),
+                        'dehydratedAttributes' => $dehydratedAttributes,
+                        'children' => $children,
+                    ];
+                }
 
                 continue;
             }
