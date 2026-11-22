@@ -10,6 +10,8 @@ use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 trait HasActiveLocaleSwitcher
 {
+    use HasTranslatableRelationships;
+
     public ?string $activeLocale = null;
 
     protected ?string $oldActiveLocale = null;
@@ -66,14 +68,37 @@ trait HasActiveLocaleSwitcher
             throw $exception;
         }
 
+        $currentRelationshipSnapshot = [];
+
+        if (property_exists($this, 'otherLocaleRelationshipData')) {
+            $currentRelationshipSnapshot = $this->getUnvalidatedTranslatableRelationshipState();
+            $this->otherLocaleRelationshipData[$this->oldActiveLocale] = $currentRelationshipSnapshot;
+        }
+
         // Refill only the translatable fields, so unsaved values of the
-        // other fields, including relationships, are left as they are.
+        // other fields, including non-translatable relationships, are left as they are.
         $this->fillTranslatableFormState([
             ...array_fill_keys($translatableAttributes, null),
             ...$this->otherLocaleData[$this->activeLocale] ?? [],
         ]);
 
         unset($this->otherLocaleData[$this->activeLocale]);
+
+        if (property_exists($this, 'otherLocaleRelationshipData')) {
+            if (filled($currentRelationshipSnapshot)) {
+                $snapshotKeys = array_keys($currentRelationshipSnapshot);
+
+                $this->fillTranslatableRelationshipState([
+                    ...array_fill_keys($snapshotKeys, null),
+                    ...Arr::only(
+                        $this->otherLocaleRelationshipData[$this->activeLocale] ?? [],
+                        $snapshotKeys,
+                    ),
+                ]);
+            }
+
+            unset($this->otherLocaleRelationshipData[$this->activeLocale]);
+        }
     }
 
     /**
