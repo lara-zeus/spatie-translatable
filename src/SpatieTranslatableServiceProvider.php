@@ -121,7 +121,12 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
             return null;
         }
 
-        if ($field->getStatePath() !== $field->getRootContainer()->getStatePath() . '.' . $field->getName()) {
+        $expectedStatePath = implode('.', array_filter([
+            $field->getRootContainer()->getStatePath(),
+            $field->getName(),
+        ], filled(...)));
+
+        if ($field->getStatePath() !== $expectedStatePath) {
             return null;
         }
 

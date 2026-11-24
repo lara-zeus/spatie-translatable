@@ -3,6 +3,7 @@
 use Filament\Actions\Action;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor\Actions\CustomBlockAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Panel;
 use Filament\Schemas\Components\Icon;
@@ -173,4 +174,78 @@ it('does not show icons on fields nested in a repeater item', function () {
         ->getComponent(fn ($component): bool => $component instanceof TextInput);
 
     expect(getTranslatableFieldIcon($nested))->toBeNull();
+});
+
+it('does not show icons when icon options are configured without calling showIcon', function () {
+    registerIconsPanel(
+        SpatieTranslatablePlugin::make()
+            ->icon(Heroicon::GlobeAlt)
+            ->iconColor('gray')
+            ->iconPosition(TranslatableFieldIconPosition::AfterLabel),
+    );
+
+    makeIconsSchema(Article::class, [$title = TextInput::make('title')]);
+
+    expect(getTranslatableFieldIcon($title))->toBeNull()
+        ->and(getTranslatableFieldIcon($title, TranslatableFieldIconPosition::AfterLabel))->toBeNull();
+});
+
+it('can disable icons with showIcon(false)', function () {
+    registerIconsPanel(
+        SpatieTranslatablePlugin::make()
+            ->showIcon()
+            ->showIcon(false),
+    );
+
+    makeIconsSchema(Article::class, [$title = TextInput::make('title')]);
+
+    expect(getTranslatableFieldIcon($title))->toBeNull();
+});
+
+it('sets the translatable field tooltip on the icon', function () {
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
+
+    makeIconsSchema(Article::class, [$title = TextInput::make('title')]);
+
+    expect(getTranslatableFieldIcon($title)?->getTooltip())
+        ->toBe(__('lara-zeus-spatie-translatable::actions.translatable_field.tooltip'));
+});
+
+it('does not show icons when the panel does not have the plugin registered', function () {
+    $panel = Panel::make()
+        ->id('without-spatie-translatable-plugin')
+        ->default();
+
+    filament()->registerPanel($panel);
+    filament()->setCurrentPanel($panel);
+
+    makeIconsSchema(Article::class, [$title = TextInput::make('title')]);
+
+    expect(getTranslatableFieldIcon($title))->toBeNull();
+});
+
+it('does not show icons on fields inside a rich editor custom block operation', function () {
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
+
+    $schema = Schema::make(new NonTranslatableActionLivewire)
+        ->model(Article::class)
+        ->statePath('data')
+        ->operation(CustomBlockAction::NAME)
+        ->components([$title = TextInput::make('title')]);
+
+    $schema->getComponents();
+
+    expect(getTranslatableFieldIcon($title))->toBeNull();
+});
+
+it('shows the icon when the root schema has no statePath', function () {
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
+
+    $schema = Schema::make(new NonTranslatableActionLivewire)
+        ->model(Article::class)
+        ->components([$title = TextInput::make('title')]);
+
+    $schema->getComponents();
+
+    expect(getTranslatableFieldIcon($title))->toBeInstanceOf(Icon::class);
 });
