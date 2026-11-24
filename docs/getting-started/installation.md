@@ -44,6 +44,26 @@ public function panel(Panel $panel): Panel
 }
 ```
 
+## Marking translatable fields
+
+To show a language icon next to the label of every form field bound to a translatable attribute, you can use the `markTranslatableFields()` method:
+
+```php
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugin(
+            SpatieTranslatablePlugin::make()
+                ->markTranslatableFields(),
+        );
+}
+```
+
+Fields with a hidden label, fields nested in a repeater item, and custom rich editor block fields are not marked, since they are not stored as translatable attributes of the model.
+
 ## Setting the default translatable locales
 
 To set up the locales that can be used to translate content, you can pass an array of locales to the `defaultLocales()` plugin method:

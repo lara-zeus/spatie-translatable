@@ -14,6 +14,8 @@ class SpatieTranslatablePlugin implements Plugin
 
     protected bool $persistLocale = false;
 
+    protected bool $markTranslatableFields = false;
+
     protected ?Closure $getLocaleLabelUsing = null;
 
     final public function __construct()
@@ -87,6 +89,18 @@ class SpatieTranslatablePlugin implements Plugin
     public function persist(bool $persistLocale = true): static
     {
         $this->persistLocale = $persistLocale;
+
+        return $this;
+    }
+
+    public function shouldMarkTranslatableFields(): bool
+    {
+        return $this->markTranslatableFields;
+    }
+
+    public function markTranslatableFields(bool $markTranslatableFields = true): static
+    {
+        $this->markTranslatableFields = $markTranslatableFields;
 
         return $this;
     }
