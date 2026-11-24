@@ -5,10 +5,10 @@ namespace LaraZeus\SpatieTranslatable;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\RichEditor\Actions\CustomBlockAction;
 use Filament\Schemas\Components\Icon;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\Column;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
+use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
 
 class SpatieTranslatableServiceProvider extends ServiceProvider
 {
@@ -22,7 +22,7 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
 
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'lara-zeus-spatie-translatable');
 
-        $this->markTranslatableFields();
+        $this->showTranslatableFieldIcons();
 
         Column::configureUsing(function (Column $column): void {
             $column->getStateUsing(function (Column $column, Model | array | null $record): mixed {
@@ -63,43 +63,59 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
         });
     }
 
-    protected function markTranslatableFields(): void
+    protected function showTranslatableFieldIcons(): void
     {
         Field::configureUsing(function (Field $field): void {
-            $field->beforeLabel(function (Field $component): ?Icon {
-                /** @var ?SpatieTranslatablePlugin $plugin */
-                $plugin = filament()->getCurrentPanel()?->hasPlugin('spatie-translatable')
-                    ? filament('spatie-translatable')
-                    : null;
-
-                if (! $plugin?->shouldMarkTranslatableFields()) {
-                    return null;
-                }
-
-                if ($component->isLabelHidden()) {
-                    return null;
-                }
-
-                $model = $component->getModelInstance();
-
-                if (! $model instanceof Model || ! method_exists($model, 'isTranslatableAttribute')) {
-                    return null;
-                }
-
-                // Custom block fields are stored inside the translated rich content, not as model attributes
-                if ($component->getRootContainer()->getOperation() === CustomBlockAction::NAME) {
-                    return null;
-                }
-
-                // Fields of a repeater item are stored inside their translated parent attribute
-                if ($component->getStatePath() !== $component->getRootContainer()->getStatePath() . '.' . $component->getName()) {
-                    return null;
-                }
-
-                return $model->isTranslatableAttribute($component->getName())
-                    ? Icon::make(Heroicon::Language)->tooltip(__('lara-zeus-spatie-translatable::actions.translatable_field.tooltip'))
-                    : null;
-            });
+            foreach (TranslatableFieldIconPosition::cases() as $position) {
+                $field->childComponents(
+                    fn (Field $component): ?Icon => static::makeTranslatableFieldIcon($component, $position),
+                    $position->getSchemaKey(),
+                );
+            }
         });
+    }
+
+    protected static function makeTranslatableFieldIcon(Field $field, TranslatableFieldIconPosition $position): ?Icon
+    {
+        /** @var ?SpatieTranslatablePlugin $plugin */
+        $plugin = filament()->getCurrentPanel()?->hasPlugin('spatie-translatable')
+            ? filament('spatie-translatable')
+            : null;
+
+        if (! $plugin?->shouldShowTranslatableFieldIcons()) {
+            return null;
+        }
+
+        if ($plugin->getTranslatableFieldIconPosition() !== $position) {
+            return null;
+        }
+
+        if ($field->isLabelHidden()) {
+            return null;
+        }
+
+        $model = $field->getModelInstance();
+
+        if (! $model instanceof Model || ! method_exists($model, 'isTranslatableAttribute')) {
+            return null;
+        }
+
+        // Custom block fields are stored inside the translated rich content, not as model attributes
+        if ($field->getRootContainer()->getOperation() === CustomBlockAction::NAME) {
+            return null;
+        }
+
+        // Fields of a repeater item are stored inside their translated parent attribute
+        if ($field->getStatePath() !== $field->getRootContainer()->getStatePath() . '.' . $field->getName()) {
+            return null;
+        }
+
+        if (! $model->isTranslatableAttribute($field->getName())) {
+            return null;
+        }
+
+        return Icon::make($plugin->getTranslatableFieldIcon())
+            ->color($plugin->getTranslatableFieldIconColor())
+            ->tooltip(__('lara-zeus-spatie-translatable::actions.translatable_field.tooltip'));
     }
 }

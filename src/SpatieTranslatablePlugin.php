@@ -2,9 +2,13 @@
 
 namespace LaraZeus\SpatieTranslatable;
 
+use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Htmlable;
+use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
 
 class SpatieTranslatablePlugin implements Plugin
 {
@@ -14,7 +18,16 @@ class SpatieTranslatablePlugin implements Plugin
 
     protected bool $persistLocale = false;
 
-    protected bool $markTranslatableFields = false;
+    protected bool $showTranslatableFieldIcons = false;
+
+    protected string | BackedEnum | Htmlable $translatableFieldIcon = Heroicon::Language;
+
+    /**
+     * @var string | array<string> | null
+     */
+    protected string | array | null $translatableFieldIconColor = null;
+
+    protected TranslatableFieldIconPosition $translatableFieldIconPosition = TranslatableFieldIconPosition::BeforeLabel;
 
     protected ?Closure $getLocaleLabelUsing = null;
 
@@ -93,14 +106,56 @@ class SpatieTranslatablePlugin implements Plugin
         return $this;
     }
 
-    public function shouldMarkTranslatableFields(): bool
+    public function shouldShowTranslatableFieldIcons(): bool
     {
-        return $this->markTranslatableFields;
+        return $this->showTranslatableFieldIcons;
     }
 
-    public function markTranslatableFields(bool $markTranslatableFields = true): static
+    public function showTranslatableFieldIcons(bool $showTranslatableFieldIcons = true): static
     {
-        $this->markTranslatableFields = $markTranslatableFields;
+        $this->showTranslatableFieldIcons = $showTranslatableFieldIcons;
+
+        return $this;
+    }
+
+    public function getTranslatableFieldIcon(): string | BackedEnum | Htmlable
+    {
+        return $this->translatableFieldIcon;
+    }
+
+    public function translatableFieldIcon(string | BackedEnum | Htmlable $icon): static
+    {
+        $this->translatableFieldIcon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * @return string | array<string> | null
+     */
+    public function getTranslatableFieldIconColor(): string | array | null
+    {
+        return $this->translatableFieldIconColor;
+    }
+
+    /**
+     * @param  string | array<string> | null  $color
+     */
+    public function translatableFieldIconColor(string | array | null $color): static
+    {
+        $this->translatableFieldIconColor = $color;
+
+        return $this;
+    }
+
+    public function getTranslatableFieldIconPosition(): TranslatableFieldIconPosition
+    {
+        return $this->translatableFieldIconPosition;
+    }
+
+    public function translatableFieldIconPosition(TranslatableFieldIconPosition $position): static
+    {
+        $this->translatableFieldIconPosition = $position;
 
         return $this;
     }
