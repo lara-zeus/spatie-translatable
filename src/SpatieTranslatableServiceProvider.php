@@ -22,7 +22,7 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
 
         $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'lara-zeus-spatie-translatable');
 
-        $this->showTranslatableFieldIcons();
+        $this->registerTranslatableFieldIcons();
 
         Column::configureUsing(function (Column $column): void {
             $column->getStateUsing(function (Column $column, Model | array | null $record): mixed {
@@ -63,7 +63,7 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
         });
     }
 
-    protected function showTranslatableFieldIcons(): void
+    protected function registerTranslatableFieldIcons(): void
     {
         Field::configureUsing(function (Field $field): void {
             foreach (TranslatableFieldIconPosition::cases() as $position) {
@@ -82,11 +82,11 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
             ? filament('spatie-translatable')
             : null;
 
-        if (! $plugin?->shouldShowTranslatableFieldIcons()) {
+        if (! $plugin?->shouldShowIcon()) {
             return null;
         }
 
-        if ($plugin->getTranslatableFieldIconPosition() !== $position) {
+        if ($plugin->getIconPosition() !== $position) {
             return null;
         }
 
@@ -114,8 +114,8 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
             return null;
         }
 
-        return Icon::make($plugin->getTranslatableFieldIcon())
-            ->color($plugin->getTranslatableFieldIconColor())
+        return Icon::make($plugin->getIcon())
+            ->color($plugin->getIconColor())
             ->tooltip(__('lara-zeus-spatie-translatable::actions.translatable_field.tooltip'));
     }
 }

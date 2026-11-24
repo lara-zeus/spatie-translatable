@@ -18,16 +18,16 @@ class SpatieTranslatablePlugin implements Plugin
 
     protected bool $persistLocale = false;
 
-    protected bool $showTranslatableFieldIcons = false;
+    protected bool $showIcon = false;
 
-    protected string | BackedEnum | Htmlable $translatableFieldIcon = Heroicon::Language;
+    protected string | BackedEnum | Htmlable $icon = Heroicon::Language;
 
     /**
      * @var string | array<string> | null
      */
-    protected string | array | null $translatableFieldIconColor = null;
+    protected string | array | null $iconColor = null;
 
-    protected TranslatableFieldIconPosition $translatableFieldIconPosition = TranslatableFieldIconPosition::BeforeLabel;
+    protected TranslatableFieldIconPosition $iconPosition = TranslatableFieldIconPosition::BeforeLabel;
 
     protected ?Closure $getLocaleLabelUsing = null;
 
@@ -106,26 +106,26 @@ class SpatieTranslatablePlugin implements Plugin
         return $this;
     }
 
-    public function shouldShowTranslatableFieldIcons(): bool
+    public function shouldShowIcon(): bool
     {
-        return $this->showTranslatableFieldIcons;
+        return $this->showIcon;
     }
 
-    public function showTranslatableFieldIcons(bool $showTranslatableFieldIcons = true): static
+    public function showIcon(bool $showIcon = true): static
     {
-        $this->showTranslatableFieldIcons = $showTranslatableFieldIcons;
+        $this->showIcon = $showIcon;
 
         return $this;
     }
 
-    public function getTranslatableFieldIcon(): string | BackedEnum | Htmlable
+    public function getIcon(): string | BackedEnum | Htmlable
     {
-        return $this->translatableFieldIcon;
+        return $this->icon;
     }
 
-    public function translatableFieldIcon(string | BackedEnum | Htmlable $icon): static
+    public function icon(string | BackedEnum | Htmlable $icon): static
     {
-        $this->translatableFieldIcon = $icon;
+        $this->icon = $icon;
 
         return $this;
     }
@@ -133,29 +133,29 @@ class SpatieTranslatablePlugin implements Plugin
     /**
      * @return string | array<string> | null
      */
-    public function getTranslatableFieldIconColor(): string | array | null
+    public function getIconColor(): string | array | null
     {
-        return $this->translatableFieldIconColor;
+        return $this->iconColor;
     }
 
     /**
      * @param  string | array<string> | null  $color
      */
-    public function translatableFieldIconColor(string | array | null $color): static
+    public function iconColor(string | array | null $color): static
     {
-        $this->translatableFieldIconColor = $color;
+        $this->iconColor = $color;
 
         return $this;
     }
 
-    public function getTranslatableFieldIconPosition(): TranslatableFieldIconPosition
+    public function getIconPosition(): TranslatableFieldIconPosition
     {
-        return $this->translatableFieldIconPosition;
+        return $this->iconPosition;
     }
 
-    public function translatableFieldIconPosition(TranslatableFieldIconPosition $position): static
+    public function iconPosition(TranslatableFieldIconPosition $position): static
     {
-        $this->translatableFieldIconPosition = $position;
+        $this->iconPosition = $position;
 
         return $this;
     }

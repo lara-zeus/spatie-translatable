@@ -49,21 +49,21 @@ function getTranslatableFieldIcon(Field $field, TranslatableFieldIconPosition $p
 it('has sensible defaults and configurable icon options', function () {
     $plugin = SpatieTranslatablePlugin::make();
 
-    expect($plugin->shouldShowTranslatableFieldIcons())->toBeFalse()
-        ->and($plugin->getTranslatableFieldIcon())->toBe(Heroicon::Language)
-        ->and($plugin->getTranslatableFieldIconColor())->toBeNull()
-        ->and($plugin->getTranslatableFieldIconPosition())->toBe(TranslatableFieldIconPosition::BeforeLabel);
+    expect($plugin->shouldShowIcon())->toBeFalse()
+        ->and($plugin->getIcon())->toBe(Heroicon::Language)
+        ->and($plugin->getIconColor())->toBeNull()
+        ->and($plugin->getIconPosition())->toBe(TranslatableFieldIconPosition::BeforeLabel);
 
     $plugin
-        ->showTranslatableFieldIcons()
-        ->translatableFieldIcon(Heroicon::GlobeAlt)
-        ->translatableFieldIconColor('gray')
-        ->translatableFieldIconPosition(TranslatableFieldIconPosition::AfterLabel);
+        ->showIcon()
+        ->icon(Heroicon::GlobeAlt)
+        ->iconColor('gray')
+        ->iconPosition(TranslatableFieldIconPosition::AfterLabel);
 
-    expect($plugin->shouldShowTranslatableFieldIcons())->toBeTrue()
-        ->and($plugin->getTranslatableFieldIcon())->toBe(Heroicon::GlobeAlt)
-        ->and($plugin->getTranslatableFieldIconColor())->toBe('gray')
-        ->and($plugin->getTranslatableFieldIconPosition())->toBe(TranslatableFieldIconPosition::AfterLabel);
+    expect($plugin->shouldShowIcon())->toBeTrue()
+        ->and($plugin->getIcon())->toBe(Heroicon::GlobeAlt)
+        ->and($plugin->getIconColor())->toBe('gray')
+        ->and($plugin->getIconPosition())->toBe(TranslatableFieldIconPosition::AfterLabel);
 });
 
 it('does not show icons by default', function () {
@@ -75,7 +75,7 @@ it('does not show icons by default', function () {
 });
 
 it('shows the icon only on translatable attributes when enabled', function () {
-    registerIconsPanel(SpatieTranslatablePlugin::make()->showTranslatableFieldIcons());
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
 
     makeIconsSchema(Article::class, [
         $title = TextInput::make('title'),
@@ -96,10 +96,10 @@ it('shows the icon only on translatable attributes when enabled', function () {
 it('uses the configured icon, color and position', function () {
     registerIconsPanel(
         SpatieTranslatablePlugin::make()
-            ->showTranslatableFieldIcons()
-            ->translatableFieldIcon(Heroicon::GlobeAlt)
-            ->translatableFieldIconColor('gray')
-            ->translatableFieldIconPosition(TranslatableFieldIconPosition::AfterLabel),
+            ->showIcon()
+            ->icon(Heroicon::GlobeAlt)
+            ->iconColor('gray')
+            ->iconPosition(TranslatableFieldIconPosition::AfterLabel),
     );
 
     makeIconsSchema(Article::class, [$title = TextInput::make('title')]);
@@ -113,7 +113,7 @@ it('uses the configured icon, color and position', function () {
 });
 
 it('keeps the icon when the field defines content in the other label slot', function () {
-    registerIconsPanel(SpatieTranslatablePlugin::make()->showTranslatableFieldIcons());
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
 
     makeIconsSchema(Article::class, [$title = TextInput::make('title')->afterLabel('Required')]);
 
@@ -121,7 +121,7 @@ it('keeps the icon when the field defines content in the other label slot', func
 });
 
 it('does not show icons on fields of non-translatable models', function () {
-    registerIconsPanel(SpatieTranslatablePlugin::make()->showTranslatableFieldIcons());
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
 
     makeIconsSchema(NonTranslatableArticle::class, [$title = TextInput::make('title')]);
 
@@ -129,7 +129,7 @@ it('does not show icons on fields of non-translatable models', function () {
 });
 
 it('does not show icons on fields nested in a repeater item', function () {
-    registerIconsPanel(SpatieTranslatablePlugin::make()->showTranslatableFieldIcons());
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
 
     $schema = makeIconsSchema(Article::class, [
         Repeater::make('blocks')->schema([TextInput::make('title')]),

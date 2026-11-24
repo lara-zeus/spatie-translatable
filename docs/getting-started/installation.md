@@ -46,7 +46,7 @@ public function panel(Panel $panel): Panel
 
 ## Showing translatable field icons
 
-To show a language icon next to the label of every form field bound to a translatable attribute, you can use the `showTranslatableFieldIcons()` method:
+To show a language icon next to the label of every form field bound to a translatable attribute, you can use the `showIcon()` method:
 
 ```php
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
@@ -57,7 +57,7 @@ public function panel(Panel $panel): Panel
         // ...
         ->plugin(
             SpatieTranslatablePlugin::make()
-                ->showTranslatableFieldIcons(),
+                ->showIcon(),
         );
 }
 ```
@@ -72,10 +72,10 @@ use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 
 SpatieTranslatablePlugin::make()
-    ->showTranslatableFieldIcons()
-    ->translatableFieldIcon(Heroicon::GlobeAlt)
-    ->translatableFieldIconColor('gray')
-    ->translatableFieldIconPosition(TranslatableFieldIconPosition::AfterLabel)
+    ->showIcon()
+    ->icon(Heroicon::GlobeAlt)
+    ->iconColor('gray')
+    ->iconPosition(TranslatableFieldIconPosition::AfterLabel)
 ```
 
 By default, the icon is `Heroicon::Language`, uses the `primary` color, and is shown before the label.
