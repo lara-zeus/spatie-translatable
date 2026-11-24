@@ -6,7 +6,10 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor\Actions\CustomBlockAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Panel;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Icon;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
@@ -14,6 +17,7 @@ use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 use Tests\Fixtures\Livewire\NonTranslatableActionLivewire;
 use Tests\Fixtures\Models\Article;
+use Tests\Fixtures\Models\FormModel;
 use Tests\Fixtures\Models\NonTranslatableArticle;
 
 function registerIconsPanel(SpatieTranslatablePlugin $plugin): void
@@ -248,4 +252,79 @@ it('shows the icon when the root schema has no statePath', function () {
     $schema->getComponents();
 
     expect(getTranslatableFieldIcon($title))->toBeInstanceOf(Icon::class);
+});
+
+it('shows icons on translatable fields inside a layout component without statePath', function () {
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
+
+    $schema = makeIconsSchema(Article::class, [
+        Section::make('Details')->schema([
+            $title = TextInput::make('title'),
+            $slug = TextInput::make('slug'),
+        ]),
+    ]);
+
+    $schema->getFlatComponents();
+
+    expect(getTranslatableFieldIcon($title))->toBeInstanceOf(Icon::class)
+        ->and(getTranslatableFieldIcon($slug))->toBeNull();
+});
+
+it('does not show icons on fields inside a non-relationship group with statePath', function () {
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
+
+    $schema = makeIconsSchema(Article::class, [
+        Group::make()->statePath('extra')->schema([
+            $title = TextInput::make('title'),
+        ]),
+    ]);
+
+    $schema->getFlatComponents();
+
+    expect(getTranslatableFieldIcon($title))->toBeNull();
+});
+
+it('shows icons on translatable fields inside a relationship layout component', function () {
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
+
+    $schema = makeIconsSchema(FormModel::class, [
+        Section::make('Meta')
+            ->relationship('meta')
+            ->schema([
+                $metaTitle = TextInput::make('meta_title'),
+                $robots = TextInput::make('robots'),
+            ]),
+        Fieldset::make('Setting')
+            ->relationship('setting')
+            ->schema([
+                $theme = TextInput::make('theme'),
+            ]),
+    ]);
+
+    $schema->getFlatComponents();
+
+    expect(getTranslatableFieldIcon($metaTitle))->toBeInstanceOf(Icon::class)
+        ->and(getTranslatableFieldIcon($robots))->toBeNull()
+        ->and(getTranslatableFieldIcon($theme))->toBeNull();
+});
+
+it('shows icons on translatable fields inside a relationship repeater', function () {
+    registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
+
+    $schema = makeIconsSchema(FormModel::class, [
+        Repeater::make('sections')
+            ->relationship()
+            ->schema([
+                TextInput::make('name'),
+            ]),
+    ]);
+
+    $schema->fill(['sections' => [['name' => 'Intro']]]);
+
+    $items = $schema->getComponent('sections')->getItems();
+
+    $nested = $items[array_key_first($items)]
+        ->getComponent(fn ($component): bool => $component instanceof TextInput);
+
+    expect(getTranslatableFieldIcon($nested))->toBeInstanceOf(Icon::class);
 });

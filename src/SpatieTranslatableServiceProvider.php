@@ -3,7 +3,9 @@
 namespace LaraZeus\SpatieTranslatable;
 
 use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor\Actions\CustomBlockAction;
+use Filament\Schemas\Components\Contracts\CanEntangleWithSingularRelationships;
 use Filament\Schemas\Components\Icon;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Column;
@@ -68,10 +70,12 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
     protected function registerTranslatableFieldIcons(): void
     {
         Field::configureUsing(function (Field $field): void {
+            /** @var array<string, mixed> $childComponents */
+            $childComponents = (fn (): array => $this->childComponents)->call($field);
+
             foreach (TranslatableFieldIconPosition::cases() as $position) {
                 $key = $position->getSchemaKey();
-
-                $existingComponents = (fn (): mixed => $this->childComponents[$key] ?? null)->call($field);
+                $existingComponents = $childComponents[$key] ?? null;
 
                 $field->childComponents(
                     function (Field $component) use ($existingComponents, $position): array | Schema {
@@ -81,10 +85,16 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
                             return $components;
                         }
 
-                        return array_values(array_filter([
-                            static::makeTranslatableFieldIcon($component, $position),
+                        $icon = static::makeTranslatableFieldIcon($component, $position);
+
+                        if (! $icon) {
+                            return Arr::wrap($components);
+                        }
+
+                        return [
+                            $icon,
                             ...Arr::wrap($components),
-                        ]));
+                        ];
                     },
                     $key,
                 );
@@ -111,22 +121,17 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
             return null;
         }
 
-        $model = $field->getModelInstance();
-
-        if (! $model instanceof Model || ! method_exists($model, 'isTranslatableAttribute')) {
-            return null;
-        }
-
         if ($field->getRootContainer()->getOperation() === CustomBlockAction::NAME) {
             return null;
         }
 
-        $expectedStatePath = implode('.', array_filter([
-            $field->getRootContainer()->getStatePath(),
-            $field->getName(),
-        ], filled(...)));
+        if (! static::isDirectModelAttributeField($field)) {
+            return null;
+        }
 
-        if ($field->getStatePath() !== $expectedStatePath) {
+        $model = $field->getModelInstance();
+
+        if (! $model instanceof Model || ! method_exists($model, 'isTranslatableAttribute')) {
             return null;
         }
 
@@ -137,5 +142,42 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
         return Icon::make($plugin->getIcon())
             ->color($plugin->getIconColor())
             ->tooltip(__('lara-zeus-spatie-translatable::actions.translatable_field.tooltip'));
+    }
+
+    protected static function isDirectModelAttributeField(Field $field): bool
+    {
+        if (blank($field->getName())) {
+            return false;
+        }
+
+        if ($field->getStatePath(isAbsolute: false) !== $field->getName()) {
+            return false;
+        }
+
+        $container = $field->getContainer();
+        $rootContainer = $field->getRootContainer();
+
+        while ($container !== $rootContainer) {
+            $parentComponent = $container->getParentComponent();
+
+            if (! $parentComponent) {
+                break;
+            }
+
+            if (
+                ($parentComponent instanceof CanEntangleWithSingularRelationships || $parentComponent instanceof Repeater)
+                && $parentComponent->hasRelationship()
+            ) {
+                return true;
+            }
+
+            if (filled($parentComponent->getStatePath(isAbsolute: false))) {
+                return false;
+            }
+
+            $container = $parentComponent->getContainer();
+        }
+
+        return true;
     }
 }
