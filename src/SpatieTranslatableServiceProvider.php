@@ -5,8 +5,10 @@ namespace LaraZeus\SpatieTranslatable;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\RichEditor\Actions\CustomBlockAction;
 use Filament\Schemas\Components\Icon;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\Column;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
 
@@ -67,9 +69,24 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
     {
         Field::configureUsing(function (Field $field): void {
             foreach (TranslatableFieldIconPosition::cases() as $position) {
+                $key = $position->getSchemaKey();
+
+                $existingComponents = (fn (): mixed => $this->childComponents[$key] ?? null)->call($field);
+
                 $field->childComponents(
-                    fn (Field $component): ?Icon => static::makeTranslatableFieldIcon($component, $position),
-                    $position->getSchemaKey(),
+                    function (Field $component) use ($existingComponents, $position): array | Schema {
+                        $components = $component->evaluate($existingComponents);
+
+                        if ($components instanceof Schema) {
+                            return $components;
+                        }
+
+                        return array_values(array_filter([
+                            static::makeTranslatableFieldIcon($component, $position),
+                            ...Arr::wrap($components),
+                        ]));
+                    },
+                    $key,
                 );
             }
         });
@@ -100,12 +117,10 @@ class SpatieTranslatableServiceProvider extends ServiceProvider
             return null;
         }
 
-        // Custom block fields are stored inside the translated rich content, not as model attributes
         if ($field->getRootContainer()->getOperation() === CustomBlockAction::NAME) {
             return null;
         }
 
-        // Fields of a repeater item are stored inside their translated parent attribute
         if ($field->getStatePath() !== $field->getRootContainer()->getStatePath() . '.' . $field->getName()) {
             return null;
         }

@@ -1,11 +1,12 @@
 <?php
 
+use Filament\Actions\Action;
 use Filament\Forms\Components\Field;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Panel;
-use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Icon;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
@@ -25,9 +26,6 @@ function registerIconsPanel(SpatieTranslatablePlugin $plugin): void
     filament()->setCurrentPanel($panel);
 }
 
-/**
- * @param  array<Component>  $components
- */
 function makeIconsSchema(string $model, array $components): Schema
 {
     $schema = Schema::make(new NonTranslatableActionLivewire)
@@ -119,6 +117,38 @@ it('keeps the icon when the field defines content in the other label slot', func
 
     expect(getTranslatableFieldIcon($title))->toBeInstanceOf(Icon::class);
 });
+
+it('keeps the native hint, hint icon tooltip and hint actions', function (?TranslatableFieldIconPosition $position) {
+    $plugin = SpatieTranslatablePlugin::make();
+
+    if ($position) {
+        $plugin->showIcon()->iconPosition($position);
+    }
+
+    registerIconsPanel($plugin);
+
+    makeIconsSchema(Article::class, [
+        $title = TextInput::make('title')
+            ->hint('Hint text')
+            ->hintIcon(Heroicon::InformationCircle, tooltip: 'Hint tooltip')
+            ->hintAction(Action::make('help')),
+    ]);
+
+    $afterLabel = collect($title->getChildSchema(Field::AFTER_LABEL_SCHEMA_KEY)?->getComponents() ?? []);
+
+    $hintText = $afterLabel->first(fn ($component): bool => $component instanceof Text);
+    $hintIcon = $afterLabel->first(fn ($component): bool => $component instanceof Icon && $component->getIcon() === Heroicon::InformationCircle);
+
+    expect($hintText?->getContent())->toBe('Hint text')
+        ->and($hintIcon?->getTooltip())->toBe('Hint tooltip')
+        ->and($afterLabel->contains(fn ($component): bool => $component instanceof Action && $component->getName() === 'help'))->toBeTrue()
+        ->and($afterLabel->contains(fn ($component): bool => $component instanceof Icon && $component->getIcon() === Heroicon::Language))
+        ->toBe($position === TranslatableFieldIconPosition::AfterLabel);
+})->with([
+    'icons disabled' => [null],
+    'icon before label' => [TranslatableFieldIconPosition::BeforeLabel],
+    'icon after label' => [TranslatableFieldIconPosition::AfterLabel],
+]);
 
 it('does not show icons on fields of non-translatable models', function () {
     registerIconsPanel(SpatieTranslatablePlugin::make()->showIcon());
