@@ -2,9 +2,13 @@
 
 namespace LaraZeus\SpatieTranslatable;
 
+use BackedEnum;
 use Closure;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Filament\Support\Icons\Heroicon;
+use Illuminate\Contracts\Support\Htmlable;
+use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
 
 class SpatieTranslatablePlugin implements Plugin
 {
@@ -13,6 +17,17 @@ class SpatieTranslatablePlugin implements Plugin
     protected bool $useFallbackLocale = false;
 
     protected bool $persistLocale = false;
+
+    protected bool $showIcon = false;
+
+    protected string | BackedEnum | Htmlable $icon = Heroicon::Language;
+
+    /**
+     * @var string | array<string> | null
+     */
+    protected string | array | null $iconColor = null;
+
+    protected TranslatableFieldIconPosition $iconPosition = TranslatableFieldIconPosition::BeforeLabel;
 
     protected ?Closure $getLocaleLabelUsing = null;
 
@@ -87,6 +102,60 @@ class SpatieTranslatablePlugin implements Plugin
     public function persist(bool $persistLocale = true): static
     {
         $this->persistLocale = $persistLocale;
+
+        return $this;
+    }
+
+    public function shouldShowIcon(): bool
+    {
+        return $this->showIcon;
+    }
+
+    public function showIcon(bool $showIcon = true): static
+    {
+        $this->showIcon = $showIcon;
+
+        return $this;
+    }
+
+    public function getIcon(): string | BackedEnum | Htmlable
+    {
+        return $this->icon;
+    }
+
+    public function icon(string | BackedEnum | Htmlable $icon): static
+    {
+        $this->icon = $icon;
+
+        return $this;
+    }
+
+    /**
+     * @return string | array<string> | null
+     */
+    public function getIconColor(): string | array | null
+    {
+        return $this->iconColor;
+    }
+
+    /**
+     * @param  string | array<string> | null  $color
+     */
+    public function iconColor(string | array | null $color): static
+    {
+        $this->iconColor = $color;
+
+        return $this;
+    }
+
+    public function getIconPosition(): TranslatableFieldIconPosition
+    {
+        return $this->iconPosition;
+    }
+
+    public function iconPosition(TranslatableFieldIconPosition $position): static
+    {
+        $this->iconPosition = $position;
 
         return $this;
     }

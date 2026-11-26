@@ -44,6 +44,42 @@ public function panel(Panel $panel): Panel
 }
 ```
 
+## Showing translatable field icons
+
+To show a language icon next to the label of every form field bound to a translatable attribute, you can use the `showIcon()` method:
+
+```php
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+
+public function panel(Panel $panel): Panel
+{
+    return $panel
+        // ...
+        ->plugin(
+            SpatieTranslatablePlugin::make()
+                ->showIcon(),
+        );
+}
+```
+
+Fields with a hidden label, fields nested in a non-relationship repeater item, and custom rich editor block fields don't get an icon, since they are not stored as translatable attributes of the model.
+
+You can customize the icon, its color and its position relative to the label:
+
+```php
+use Filament\Support\Icons\Heroicon;
+use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
+use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
+
+SpatieTranslatablePlugin::make()
+    ->showIcon()
+    ->icon(Heroicon::GlobeAlt)
+    ->iconColor('gray')
+    ->iconPosition(TranslatableFieldIconPosition::AfterLabel)
+```
+
+By default, the icon is `Heroicon::Language`, uses the `primary` color, and is shown before the label.
+
 ## Setting the default translatable locales
 
 To set up the locales that can be used to translate content, you can pass an array of locales to the `defaultLocales()` plugin method:

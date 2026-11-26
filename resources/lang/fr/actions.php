@@ -6,4 +6,8 @@ return [
         'label' => 'Locale',
     ],
 
+    'translatable_field' => [
+        'tooltip' => 'Champ traduisible',
+    ],
+
 ];
