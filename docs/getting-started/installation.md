@@ -62,7 +62,7 @@ public function panel(Panel $panel): Panel
 }
 ```
 
-Fields with a hidden label, fields nested in a repeater item, and custom rich editor block fields don't get an icon, since they are not stored as translatable attributes of the model.
+Fields with a hidden label, fields nested in a non-relationship repeater item, and custom rich editor block fields don't get an icon, since they are not stored as translatable attributes of the model.
 
 You can customize the icon, its color and its position relative to the label:
 
