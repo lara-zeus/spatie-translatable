@@ -7,14 +7,14 @@
 <p align="center">
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/lara-zeus/spatie-translatable.svg?style=flat-square)](https://packagist.org/packages/lara-zeus/spatie-translatable)
-[![Code Style](https://img.shields.io/github/actions/workflow/status/lara-zeus/spatie-translatable/fix-php-code-style-issues.yml?label=code-style&flat-square)](https://github.com/lara-zeus/spatie-translatable/actions?query=workflow%3Afix-php-code-style-issues+branch%3A1.x)
+[![Code Style](https://img.shields.io/github/actions/workflow/status/lara-zeus/spatie-translatable/fix-php-code-style-issues.yml?label=code-style&flat-square)](https://github.com/lara-zeus/spatie-translatable/actions?query=workflow%3Afix-php-code-style-issues+branch%3A2.x)
 [![Total Downloads](https://img.shields.io/packagist/dt/lara-zeus/spatie-translatable.svg?style=flat-square)](https://packagist.org/packages/lara-zeus/spatie-translatable)
 [![Total Downloads](https://img.shields.io/github/stars/lara-zeus/spatie-translatable?style=flat-square)](https://github.com/lara-zeus/spatie-translatable)
 
 </p>
 
 > [!IMPORTANT]  
-> This plugin is for filament v4 only, if you're looking for filament v3 support, please check the new repo: [translatable](https://github.com/lara-zeus/spatie-translatable).
+> This plugin is for Filament v4 (`v1.x`) and v5 (`v2.x`). If you're looking for Filament v3 support, please check the [translatable](https://github.com/lara-zeus/translatable) repository.
 
 ## Support Filament
 
@@ -40,21 +40,24 @@ We are committed to providing ongoing improvements and welcome contributions and
 ## Features
 
 - 🔥 Using Spatie translatable package
-- 🔥 default translatable locales
-- 🔥 Locale Switcher
-- 🔥 Support for create, edit, list and view pages
+- 🔥 Default translatable locales & custom locale labels
+- 🔥 Locale Switcher with optional session persistence
+- 🔥 Support for create, edit, list, view, and manage pages
+- 🔥 Optional validation across all configured locales (`validateAllLocales()`)
+- 🔥 Optional fallback locale support (`useFallbackLocale()`)
+- 🔥 Optional translatable field icons (`showIcon()`)
 - 🔥 Setting the translatable locales for a particular resource
-- 🔥 Translating relation managers
+- 🔥 Translating relationships in forms and relation managers
 
 ## Full Documentation
 
 > Visit our website to get the complete documentation: https://larazeus.com/docs/spatie-translatable
 
-### Important Note on Using the Local Switcher
+### Important Note on Using the Locale Switcher
 
-Please be aware that there are some known limitations when using the local switcher with certain complex field types.
+Please be aware that there are some known limitations when using the locale switcher with certain complex field types.
 
-To avoid potential issues, we recommend disabling the local switcher and using the specified field types instead.
+To avoid potential issues, we recommend disabling the locale switcher and using the specified field types instead.
 
 #### Available Components for Translatable Fields:
 

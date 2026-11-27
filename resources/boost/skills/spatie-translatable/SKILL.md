@@ -8,7 +8,7 @@ description: Configure multi-locale Filament v4/v5 resources, pages, relation ma
 ## Overview & Requirements
 - **Package**: `lara-zeus/spatie-translatable` (Free / MIT)
 - **Requirements**: PHP `^8.1`, `ext-intl`, `filament/filament` `^5.0`, `spatie/laravel-translatable` `^6.0`
-- **Features**: Panel-wide default locales, session locale persistence (`persist()`), cross-locale validation (`validateAllLocales()`), fallback locale support (`useFallbackLocale()`), translatable table columns (configured in `SpatieTranslatableServiceProvider`), and translatable relationship/repeater state handling (`HasTranslatableRelationships`).
+- **Features**: Panel-wide default locales, custom locale labels (`getLocaleLabelUsing()`), session locale persistence (`persist()`), cross-locale validation (`validateAllLocales()`), fallback locale support (`useFallbackLocale()`), translatable field icons (`showIcon()`, `icon()`, `iconColor()`, `iconPosition()`), translatable table columns (configured in `SpatieTranslatableServiceProvider`), and translatable relationship/repeater state handling (`HasTranslatableRelationships`).
 
 ## Installation
 ```bash
@@ -24,6 +24,8 @@ php artisan vendor:publish --tag=lara-zeus-spatie-translatable-translations
 ## Filament Panel Registration
 Register `SpatieTranslatablePlugin` in your `PanelProvider`:
 ```php
+use Filament\Support\Icons\Heroicon;
+use LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition;
 use LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin;
 
 public function panel(Panel $panel): Panel
@@ -35,6 +37,10 @@ public function panel(Panel $panel): Panel
                 ->persist()
                 ->validateAllLocales()
                 ->useFallbackLocale()
+                ->showIcon()
+                ->icon(Heroicon::Language)
+                ->iconColor('primary')
+                ->iconPosition(TranslatableFieldIconPosition::BeforeLabel)
                 ->getLocaleLabelUsing(fn (string $locale, string $displayLocale): ?string => strtoupper($locale)),
         );
 }
