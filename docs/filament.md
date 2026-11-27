@@ -5,11 +5,14 @@ Translatable is Filament support for Spatie's Laravel Translatable package.
 ## Features
 
 - 🔥 Using Spatie translatable package
-- 🔥 Default translatable locales
-- 🔥 Locale Switcher
-- 🔥 Support for create, edit, list and view pages
+- 🔥 Default translatable locales & custom locale labels
+- 🔥 Locale Switcher with optional session persistence
+- 🔥 Support for create, edit, list, view, and manage pages
+- 🔥 Optional validation across all configured locales (`validateAllLocales()`)
+- 🔥 Optional fallback locale support (`useFallbackLocale()`)
+- 🔥 Optional translatable field icons (`showIcon()`)
 - 🔥 Setting the translatable locales for a particular resource
-- 🔥 Translating relation managers
+- 🔥 Translating relationships in forms and relation managers
 
 ## More Details
 
@@ -17,11 +20,11 @@ Translatable is Filament support for Spatie's Laravel Translatable package.
 
 - [Docs](https://larazeus.com/docs/spatie-translatable)
 
-## Important Note on Using the Local Switcher
+## Important Note on Using the Locale Switcher
 
-Please be aware that there are some known limitations when using the local switcher with certain complex field types.
+Please be aware that there are some known limitations when using the locale switcher with certain complex field types.
 
-To avoid potential issues, we recommend disabling the local switcher and using the specified field types instead.
+To avoid potential issues, we recommend disabling the locale switcher and using the specified field types instead.
 
 ### Available Components for Translatable Fields:
 

@@ -4,7 +4,8 @@ Filament v4/v5 support for `spatie/laravel-translatable` (maintained fork of Fil
 
 ### Key Classes & Traits
 - Plugin: `LaraZeus\SpatieTranslatable\SpatieTranslatablePlugin` (ID `'spatie-translatable'`)
-  - Methods: `defaultLocales(?array)`, `useFallbackLocale(bool = true)`, `validateAllLocales(bool = true)`, `persist(bool = true)`, `getLocaleLabelUsing(?Closure)`
+  - Methods: `defaultLocales(?array)`, `useFallbackLocale(bool = true)`, `validateAllLocales(bool = true)`, `persist(bool = true)`, `showIcon(bool = true)`, `icon(string|BackedEnum|Htmlable)`, `iconColor(string|array|null)`, `iconPosition(TranslatableFieldIconPosition)`, `getLocaleLabelUsing(?Closure)`
+- Enum: `LaraZeus\SpatieTranslatable\Enums\TranslatableFieldIconPosition` (`BeforeLabel`, `AfterLabel`)
 - Content Driver: `LaraZeus\SpatieTranslatable\SpatieTranslatableContentDriver`
 - Resource Trait: `LaraZeus\SpatieTranslatable\Resources\Concerns\Translatable`
 - Page Traits (`LaraZeus\SpatieTranslatable\Resources\Pages\*\Concerns\Translatable`):
